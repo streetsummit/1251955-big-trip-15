@@ -25,14 +25,55 @@ const generateDestination = () => ({
   })),
 });
 
-const generateEvent = () => ({
-  dateFrom: '2019-03-19T11:20',
-  dateTo: '2019-03-19T13:00',
-  type: getRandomArrayElement(TYPES),
-  destination: generateDestination(),
-  price: getRandomInteger(0, 250),
-  offers: [],
-  isFavorite: Boolean(getRandomInteger(0, 1)),
-});
+const OPTIONS = [
+  {
+    title: 'Order Uber',
+    price: 20,
+  },
+  {
+    title: 'Add luggage',
+    price: 50,
+  },
+  {
+    title: 'Rent a car',
+    price: 200,
+  },
+  {
+    title: 'Add breakfast',
+    price: 50,
+  },
+  {
+    title: 'Book tickets',
+    price: 40,
+  },
+  {
+    title: 'Switch to comfort',
+    price: 80,
+  },
+  {
+    title: 'Lunch in city',
+    price: 30,
+  },
+];
+
+const offersList = TYPES.map((type) => ({
+  type,
+  offers: getRandomLengthArray(OPTIONS, 0, 5),
+}));
+
+
+const generateEvent = () => {
+  const type = getRandomArrayElement(TYPES);
+
+  return {
+    dateFrom: '2019-03-19T11:20',
+    dateTo: '2019-03-19T13:00',
+    type,
+    destination: generateDestination(),
+    price: getRandomInteger(0, 250),
+    offers: (offersList.find((el) => el.type === type)).offers,
+    isFavorite: Boolean(getRandomInteger(0, 1)),
+  };
+};
 
 export { generateEvent };
