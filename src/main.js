@@ -6,6 +6,7 @@ import { createEventListTemplate } from './view/event-list.js';
 import { createEventTemplate } from './view/event.js';
 import { createNewEventFormTemplate } from './view/new-event-form.js';
 import { createEditEventFormTemplate } from './view/edit-event-form.js';
+import { generateEvent } from './mocks/mock-event.js';
 
 const EVENTS_COUNT = 3;
 
@@ -16,7 +17,7 @@ const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const events = new Array(EVENTS_COUNT).fill(null).map(() => createEventTemplate());
+const events = new Array(EVENTS_COUNT).fill(null).map(() => createEventTemplate(generateEvent()));
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
