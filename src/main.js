@@ -8,7 +8,7 @@ import { createNewEventFormTemplate } from './view/new-event-form.js';
 import { createEditEventFormTemplate } from './view/edit-event-form.js';
 import { generateEvent } from './mocks/mock-event.js';
 
-const EVENTS_COUNT = 3;
+const EVENTS_COUNT = 20;
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
