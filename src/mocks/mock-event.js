@@ -1,4 +1,5 @@
 import { getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
+import dayjs from 'dayjs';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
@@ -61,13 +62,27 @@ const offersList = TYPES.map((type) => ({
   offers: getRandomLengthArray(OPTIONS, 0, 5),
 }));
 
-
 const generateEvent = () => {
+  const generateDateFrom = () => {
+    const MAX_MINUTES_GAP = 7 * 24 * 60;
+    const dateGap = getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP);
+    return dayjs().add(dateGap, 'minute');
+  };
+  const dateFrom = generateDateFrom();
+
+  const generateDateTo = () => {
+    const MAX_MINUTES_GAP = 2 * 24 * 60;
+    const dateGap = getRandomInteger(30, MAX_MINUTES_GAP);
+    return dayjs(dateFrom).add(dateGap, 'minute');
+
+  };
+  const dateTo = generateDateTo();
+
   const type = getRandomArrayElement(TYPES);
 
   return {
-    dateFrom: '2019-03-19T11:20',
-    dateTo: '2019-03-19T13:00',
+    dateFrom: dateFrom.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+    dateTo: dateTo.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     type,
     destination: generateDestination(),
     price: getRandomInteger(0, 250),
