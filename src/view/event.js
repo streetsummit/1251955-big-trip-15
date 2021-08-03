@@ -1,3 +1,25 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
+
+const createEventDurationTemplate = (start, end) => {
+  const eventDuration = dayjs(end) - dayjs(start);
+
+  let days = dayjs.duration(eventDuration).days();
+  days = days < 10 ? `0${days}` : days;
+  let hours = dayjs.duration(eventDuration).hours();
+  hours = hours < 10 ? `0${hours}` : hours;
+  let minutes = dayjs.duration(eventDuration).minutes();
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  if (days > 0) {
+    return `${days}D ${hours}H ${minutes}M`;
+  } else if (hours > 0) {
+    return `${hours}H ${minutes}M`;
+  }
+  return `${minutes}M`;
+};
+
 const createEventOfferListTemplate = (offers) => (`
   <ul class="event__selected-offers">
     ${offers.map((offer) => (`
@@ -13,25 +35,25 @@ const createEventOfferListTemplate = (offers) => (`
 const createEventTemplate = (event) => {
   const {dateFrom, dateTo, type, destination, price, offers, isFavorite } = event;
 
+  const durationTemplate = createEventDurationTemplate(dateFrom, dateTo);
   const offersTemplate = createEventOfferListTemplate(offers);
-
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn  event__favorite-btn--active'
     : 'event__favorite-btn';
 
   return `<div class="event">
-    <time class="event__date" datetime="2019-03-18">MAR 18</time>
+    <time class="event__date" datetime="${dayjs(dateFrom).format('YYYY-MM-DD')}">${dayjs(dateFrom).format('MMM DD')}</time>
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
     <h3 class="event__title">${type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+        <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateFrom).format('HH:mm')}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+        <time class="event__end-time" datetime="${dayjs(dateTo).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateTo).format('HH:mm')}</time>
       </p>
-      <p class="event__duration">30M</p>
+      <p class="event__duration">${durationTemplate}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>
