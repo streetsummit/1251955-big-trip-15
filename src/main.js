@@ -4,7 +4,6 @@ import { createTripFilterTemplate } from './view/filter.js';
 import { createTripSortTemplate } from './view/trip-sort.js';
 import { createEventListTemplate } from './view/event-list.js';
 import { createEventTemplate } from './view/event.js';
-import { createNewEventFormTemplate } from './view/new-event-form.js';
 import { createEventEditTemplate } from './view/event-edit.js';
 import { generateEvent } from './mocks/mock-event.js';
 
@@ -27,4 +26,4 @@ render(siteMenuElement, createMenuTemplate(), 'beforeend');
 render(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 render(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
-render(tripEventsElement, createEventListTemplate(createEventEditTemplate(), ...events, createNewEventFormTemplate()), 'beforeend');
+render(tripEventsElement, createEventListTemplate(createEventEditTemplate(), ...events), 'beforeend');
