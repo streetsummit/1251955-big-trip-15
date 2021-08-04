@@ -61,6 +61,8 @@ const offersList = TYPES.map((type) => ({
   offers: getRandomLengthArray(OPTIONS, 0, 5),
 }));
 
+const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
+
 const generateEvent = () => {
   const generateDateFrom = () => {
     const MAX_MINUTES_GAP = 7 * 24 * 60;
@@ -78,6 +80,7 @@ const generateEvent = () => {
 
   const type = getRandomArrayElement(TYPES);
   const destination = getRandomArrayElement(destinationsList);
+  const offers = getRandomLengthArray(getAvailableOffers(type));
 
   return {
     dateFrom: dateFrom.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
@@ -85,9 +88,9 @@ const generateEvent = () => {
     type,
     destination,
     price: getRandomInteger(0, 250),
-    offers: (offersList.find((el) => el.type === type)).offers,
+    offers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
 };
 
-export { generateEvent };
+export { generateEvent, destinationsList, getAvailableOffers };
