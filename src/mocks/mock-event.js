@@ -48,7 +48,7 @@ const OPTIONS = [
 ];
 
 const destinationsList = CITIES.map((name) => ({
-  description: getRandomLengthArray(SENTENCES, 0, 5),
+  description: getRandomLengthArray(SENTENCES, 0, 5).join(' '),
   name,
   pictures: new Array(getRandomInteger(0, 5)).fill(null).map(() => ({
     src: `http://picsum.photos/300/200?r=${Math.random()}`,
