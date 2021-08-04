@@ -1,5 +1,15 @@
-const createEventEditTemplate = () => (`
-  <form class="event event--edit" action="#" method="post">
+const createEventEditTemplate = (event = {}) => {
+  const {
+    dateFrom = '2019-03-19T00:00:00.000Z',
+    dateTo = '2019-03-19T00:00:00.000Z',
+    type = 'flight',
+    destination = '',
+    price = '',
+    offers = '',
+    isFavorite = false,
+  } = event;
+
+  return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -90,7 +100,7 @@ const createEventEditTemplate = () => (`
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -156,7 +166,7 @@ const createEventEditTemplate = () => (`
         <p class="event__destination-description">Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area near the junction of France, Switzerland and Italy. At the base of Mont Blanc, the highest summit in the Alps, it's renowned for its skiing.</p>
       </section>
     </section>
-  </form>
-`);
+  </form>`;
+};
 
 export { createEventEditTemplate };

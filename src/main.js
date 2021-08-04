@@ -16,7 +16,10 @@ const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const events = new Array(EVENTS_COUNT).fill(null).map(() => createEventTemplate(generateEvent()));
+const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
+const editedEventElement = createEventEditTemplate(events[0]);
+const eventElements = events.slice(1).map(createEventTemplate);
+const newEventElement = createEventEditTemplate();
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -26,4 +29,4 @@ render(siteMenuElement, createMenuTemplate(), 'beforeend');
 render(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 render(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
-render(tripEventsElement, createEventListTemplate(createEventEditTemplate(), ...events), 'beforeend');
+render(tripEventsElement, createEventListTemplate(editedEventElement, newEventElement, ...eventElements), 'beforeend');
