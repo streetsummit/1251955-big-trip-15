@@ -1,7 +1,6 @@
-import { getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
+import { TYPES, getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
 import dayjs from 'dayjs';
 
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
 
 const SENTENCES = [

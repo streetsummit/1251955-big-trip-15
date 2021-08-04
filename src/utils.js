@@ -1,3 +1,5 @@
+const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
@@ -20,6 +22,7 @@ const getRandomLengthArray = (array, min = 0, max = array.length) => {
 };
 
 export {
+  TYPES,
   getRandomInteger,
   getRandomArrayElement,
   getRandomLengthArray
