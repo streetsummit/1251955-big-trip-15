@@ -1,4 +1,6 @@
-import { TYPES } from '../utils.js';
+import { TYPES, makeId } from '../utils.js';
+import { destinationsList, getAvailableOffers } from '../mocks/mock-event.js';
+import dayjs from 'dayjs';
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   <div class="event__type-item">
@@ -17,18 +19,92 @@ const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   </div>
 `)).join('\n');
 
+const createDestinationSelectTemplate = (name) => (`
+  <input
+    class="event__input  event__input--destination"
+    id="event-destination-1" type="text"
+    name="event-destination"
+    value="${name}"
+    list="destination-list-1"
+  >
+  <datalist id="destination-list-1">
+    ${destinationsList.map((element) => (`
+      <option value="${element.name}"></option>
+    `)).join('\n')}
+  </datalist>
+`);
+
+// Проблемы нейминга
+const createOffersTemplate = (data, currentOffers) => (`
+  <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+    ${data.map((it) => {
+    const id = makeId();
+
+    return (`
+      <div class="event__offer-selector">
+        <input
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${id}-1"
+          type="checkbox"
+          name="event-offer-${id}"
+          ${currentOffers.some((element) => element.title === it.title) ? 'checked' : ''}
+        >
+        <label
+          class="event__offer-label"
+          for="event-offer-${id}-1"
+        >
+          <span class="event__offer-title">${it.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${it.price}</span>
+        </label>
+      </div>
+    `);
+  }).join('\n')}
+    </div>
+  </section>
+`);
+
+const createDestinationTemplate = (currentDestination) => {
+  const {pictures = []} = currentDestination;
+  return (`
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${currentDestination.description}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+      ${ pictures.map((picture) => (`
+        <img class="event__photo" src="${picture.src}" alt="${picture.description}">
+      `)).join('\n')}
+      </div>
+    </div>
+  </section>
+  `);
+};
+
 const createEventEditTemplate = (event = {}) => {
   const {
     dateFrom = '2019-03-19T00:00:00.000Z',
     dateTo = '2019-03-19T00:00:00.000Z',
     type = 'flight',
-    destination = '',
+    destination = {},
     price = '',
-    offers = '',
-    isFavorite = false,
+    offers = [],
   } = event;
 
+  const {
+    description = '',
+    name = '',
+    pictures = [],
+  } = destination;
+
   const typesTemplate = createEventEditTypesTemplate(type);
+  const destinationSelectTemplate = createDestinationSelectTemplate(name);
+  const availableOffers = getAvailableOffers(type);
+  const offersTemplate = createOffersTemplate(availableOffers, offers);
+  const destinationTemplate = createDestinationTemplate(destination);
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -52,20 +128,15 @@ const createEventEditTemplate = (event = {}) => {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
-        <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
-        </datalist>
+        ${destinationSelectTemplate}
       </div>
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -83,61 +154,10 @@ const createEventEditTemplate = (event = {}) => {
       </button>
     </header>
     <section class="event__details">
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-        <div class="event__available-offers">
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-            <label class="event__offer-label" for="event-offer-luggage-1">
-              <span class="event__offer-title">Add luggage</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">50</span>
-            </label>
-          </div>
+      ${ availableOffers.length ? offersTemplate : ''}
 
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-            <label class="event__offer-label" for="event-offer-comfort-1">
-              <span class="event__offer-title">Switch to comfort</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">80</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-            <label class="event__offer-label" for="event-offer-meal-1">
-              <span class="event__offer-title">Add meal</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">15</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-            <label class="event__offer-label" for="event-offer-seats-1">
-              <span class="event__offer-title">Choose seats</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">5</span>
-            </label>
-          </div>
-
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-            <label class="event__offer-label" for="event-offer-train-1">
-              <span class="event__offer-title">Travel by train</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">40</span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area near the junction of France, Switzerland and Italy. At the base of Mont Blanc, the highest summit in the Alps, it's renowned for its skiing.</p>
-      </section>
+      ${description || pictures.length ? destinationTemplate : ''}
     </section>
   </form>`;
 };
