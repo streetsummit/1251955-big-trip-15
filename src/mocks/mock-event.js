@@ -16,15 +16,6 @@ const SENTENCES = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const generateDestination = () => ({
-  description: getRandomLengthArray(SENTENCES, 1, 5),
-  name: getRandomArrayElement(CITIES),
-  pictures: new Array(getRandomInteger(1, 5)).fill(null).map(() => ({
-    src: `http://picsum.photos/300/200?r=${Math.random()}`,
-    description: getRandomArrayElement(SENTENCES),
-  })),
-});
-
 const OPTIONS = [
   {
     title: 'Order Uber',
@@ -56,6 +47,15 @@ const OPTIONS = [
   },
 ];
 
+const destinationsList = CITIES.map((name) => ({
+  description: getRandomLengthArray(SENTENCES, 0, 5),
+  name,
+  pictures: new Array(getRandomInteger(0, 5)).fill(null).map(() => ({
+    src: `http://picsum.photos/300/200?r=${Math.random()}`,
+    description: getRandomArrayElement(SENTENCES),
+  })),
+}));
+
 const offersList = TYPES.map((type) => ({
   type,
   offers: getRandomLengthArray(OPTIONS, 0, 5),
@@ -73,17 +73,17 @@ const generateEvent = () => {
     const MAX_MINUTES_GAP = 2 * 24 * 60;
     const dateGap = getRandomInteger(30, MAX_MINUTES_GAP);
     return dayjs(dateFrom).add(dateGap, 'minute');
-
   };
   const dateTo = generateDateTo();
 
   const type = getRandomArrayElement(TYPES);
+  const destination = getRandomArrayElement(destinationsList);
 
   return {
     dateFrom: dateFrom.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     dateTo: dateTo.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     type,
-    destination: generateDestination(),
+    destination,
     price: getRandomInteger(0, 250),
     offers: (offersList.find((el) => el.type === type)).offers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
