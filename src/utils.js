@@ -21,9 +21,19 @@ const getRandomLengthArray = (array, min = 0, max = array.length) => {
   return randomLengthArray;
 };
 
+const makeId= () => {
+  let text = '';
+  const symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    text += symbols.charAt(Math.floor(Math.random() * symbols.length));
+  }
+  return text;
+};
+
 export {
   TYPES,
   getRandomInteger,
   getRandomArrayElement,
-  getRandomLengthArray
+  getRandomLengthArray,
+  makeId
 };
