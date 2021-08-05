@@ -17,9 +17,7 @@ const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
-const editedEventElement = createEventEditTemplate(events[0]);
 const eventElements = events.slice(1).map(createEventTemplate);
-const newEventElement = createEventEditTemplate();
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -29,4 +27,6 @@ render(siteMenuElement, createMenuTemplate(), 'beforeend');
 render(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 render(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 render(tripEventsElement, createTripSortTemplate(), 'beforeend');
-render(tripEventsElement, createEventListTemplate(editedEventElement, newEventElement, ...eventElements), 'beforeend');
+render(tripEventsElement, createEventListTemplate(createEventEditTemplate(events[0]), ...eventElements), 'beforeend');
+
+console.log(events);
