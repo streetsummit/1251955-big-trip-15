@@ -1,5 +1,5 @@
-import { renderTemplate } from './utils.js';
-import { createMenuTemplate } from './view/menu.js';
+import { renderTemplate, renderElement, RenderPosition } from './utils.js';
+import MenuView from './view/menu.js';
 import { createTripInfoTemplate } from './view/trip-info.js';
 import { createTripFilterTemplate } from './view/filter.js';
 import { createTripSortTemplate } from './view/trip-sort.js';
@@ -20,7 +20,8 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
 const eventElements = events.slice(1).map(createEventTemplate);
 
-renderTemplate(siteMenuElement, createMenuTemplate(), 'beforeend');
+renderElement(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
+
 renderTemplate(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 renderTemplate(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 renderTemplate(tripEventsElement, createTripSortTemplate(), 'beforeend');
