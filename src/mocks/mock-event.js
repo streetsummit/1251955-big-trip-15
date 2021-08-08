@@ -3,6 +3,10 @@ import dayjs from 'dayjs';
 
 const MAX_PICTURES_COUNT = 5;
 const MAX_EVENT_PRICE = 250;
+const MAX_MINUTES_GAP = 2 * 24 * 60;
+const MIN_EVENT_DURATION = 10;
+const MAX_DESCRIPTION_LENGTH = 5;
+const MAX_OPTIONS_COUNT = 5;
 
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
 
@@ -18,7 +22,6 @@ const SENTENCES = [
   'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus.',
   'In rutrum ac purus sit amet tempus.',
 ];
-const MAX_DESCRIPTION_LENGTH = 5;
 
 const OPTIONS = [
   {
@@ -50,7 +53,8 @@ const OPTIONS = [
     price: 30,
   },
 ];
-const MAX_OPTIONS_COUNT = 5;
+
+const generateDate = (from, gap) => dayjs(from).add(gap, 'minute');
 
 const destinationsList = CITIES.map((name) => ({
   description: getRandomLengthArray(SENTENCES, 0, MAX_DESCRIPTION_LENGTH).join(' '),
@@ -69,20 +73,8 @@ const offersList = TYPES.map((type) => ({
 const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
 
 const generateEvent = () => {
-  const generateDateFrom = () => {
-    const MAX_MINUTES_GAP = 7 * 24 * 60;
-    const dateGap = getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP);
-    return dayjs().add(dateGap, 'minute');
-  };
-  const dateFrom = generateDateFrom();
-
-  const generateDateTo = () => {
-    const MAX_MINUTES_GAP = 2 * 24 * 60;
-    const dateGap = getRandomInteger(30, MAX_MINUTES_GAP);
-    return dayjs(dateFrom).add(dateGap, 'minute');
-  };
-  const dateTo = generateDateTo();
-
+  const dateFrom = generateDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
+  const dateTo = generateDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
   const type = getRandomArrayElement(TYPES);
   const destination = getRandomArrayElement(destinationsList);
   const offers = getRandomLengthArray(getAvailableOffers(type));
