@@ -1,4 +1,4 @@
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+export const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export const RenderPosition = {
@@ -28,16 +28,16 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const getRandomInteger = (min, max) => {
+export const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
   const result = Math.random() * (upper - lower + 1) + lower;
   return Math.floor(result);
 };
 
-const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
+export const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
-const getRandomLengthArray = (array, min = 0, max = array.length) => {
+export const getRandomLengthArray = (array, min = 0, max = array.length) => {
   const dataArray = array.slice();
   const randomLengthArray = [];
   const randomLength = getRandomInteger(min, max);
@@ -49,18 +49,10 @@ const getRandomLengthArray = (array, min = 0, max = array.length) => {
   return randomLengthArray;
 };
 
-const makeId= (idLength) => {
+export const makeId= (idLength) => {
   let text = '';
   for (let i = 0; i < idLength; i++) {
     text += SYMBOLS.charAt(Math.floor(Math.random() * SYMBOLS.length));
   }
   return text;
-};
-
-export {
-  TYPES,
-  getRandomInteger,
-  getRandomArrayElement,
-  getRandomLengthArray,
-  makeId
 };
