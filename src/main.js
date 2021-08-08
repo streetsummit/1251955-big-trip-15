@@ -4,8 +4,8 @@ import { createTripInfoTemplate } from './view/trip-info.js';
 import { createTripFilterTemplate } from './view/filter.js';
 import TripSortView from './view/trip-sort.js';
 import { createEventListTemplate } from './view/event-list.js';
-import { createEventTemplate } from './view/event.js';
-import { createEventEditTemplate } from './view/event-edit.js';
+import EventView from './view/event.js';
+import EditEventView from './view/event-edit.js';
 import { generateEvent } from './mocks/mock-event.js';
 
 const EVENTS_COUNT = 20;
@@ -18,12 +18,13 @@ const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
-const eventElements = events.slice(1).map(createEventTemplate);
+const eventTemplates = events.slice(1).map((el) => new EventView(el).getTemplate());
+const editEventTemplate = new EditEventView((events[0])).getTemplate();
 
 renderElement(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
 renderTemplate(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 renderTemplate(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 renderElement(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-renderTemplate(tripEventsElement, createEventListTemplate(createEventEditTemplate(events[0]), ...eventElements), 'beforeend');
+renderTemplate(tripEventsElement, createEventListTemplate(editEventTemplate, ...eventTemplates), 'beforeend');
 
 console.log(events);

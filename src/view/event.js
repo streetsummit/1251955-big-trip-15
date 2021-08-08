@@ -1,3 +1,4 @@
+import { createElement } from '../utils.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
@@ -72,4 +73,24 @@ const createEventTemplate = (event) => {
   </div>`;
 };
 
-export { createEventTemplate };
+export default class Event {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

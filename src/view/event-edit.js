@@ -1,4 +1,4 @@
-import { TYPES, makeId } from '../utils.js';
+import { TYPES, makeId, createElement } from '../utils.js';
 import { destinationsList, getAvailableOffers } from '../mocks/mock-event.js';
 import dayjs from 'dayjs';
 
@@ -19,8 +19,8 @@ const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   </div>
 `)).join('\n');
 
-const createDestinationSelectTemplate = (name) => (`
-  <input
+const createDestinationSelectTemplate = (name) => (
+  `<input
     class="event__input  event__input--destination"
     id="event-destination-1" type="text"
     name="event-destination"
@@ -31,19 +31,19 @@ const createDestinationSelectTemplate = (name) => (`
     ${destinationsList.map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
-  </datalist>
-`);
+  </datalist>`
+);
 
 // Проблемы нейминга
-const createOffersTemplate = (data, currentOffers) => (`
-  <section class="event__section  event__section--offers">
+const createOffersTemplate = (data, currentOffers) => (
+  `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${data.map((it) => {
     const id = makeId(6);
 
-    return (`
-      <div class="event__offer-selector">
+    return (
+      `<div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
           id="event-offer-${id}-1"
@@ -59,29 +59,27 @@ const createOffersTemplate = (data, currentOffers) => (`
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${it.price}</span>
         </label>
-      </div>
-    `);
+      </div>`
+    );
   }).join('\n')}
     </div>
-  </section>
-`);
+  </section>`
+);
 
 const createDestinationTemplate = (currentDestination) => {
   const {pictures = []} = currentDestination;
-  return (`
-  <section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${currentDestination.description}</p>
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${currentDestination.description}</p>
 
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-      ${ pictures.map((picture) => (`
-        <img class="event__photo" src="${picture.src}" alt="${picture.description}">
-      `)).join('\n')}
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+        ${pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)).join('\n')}
       </div>
     </div>
-  </section>
-  `);
+  </section>`
+  );
 };
 
 const createEventEditTemplate = (event = {}) => {
@@ -162,4 +160,24 @@ const createEventEditTemplate = (event = {}) => {
   </form>`;
 };
 
-export { createEventEditTemplate };
+export default class EditEvent {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
