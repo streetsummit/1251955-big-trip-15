@@ -1,6 +1,9 @@
 import { TYPES, getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
 import dayjs from 'dayjs';
 
+const MAX_PICTURES_COUNT = 5;
+const MAX_EVENT_PRICE = 250;
+
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
 
 const SENTENCES = [
@@ -15,6 +18,7 @@ const SENTENCES = [
   'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus.',
   'In rutrum ac purus sit amet tempus.',
 ];
+const MAX_DESCRIPTION_LENGTH = 5;
 
 const OPTIONS = [
   {
@@ -46,11 +50,12 @@ const OPTIONS = [
     price: 30,
   },
 ];
+const MAX_OPTIONS_COUNT = 5;
 
 const destinationsList = CITIES.map((name) => ({
-  description: getRandomLengthArray(SENTENCES, 0, 5).join(' '),
+  description: getRandomLengthArray(SENTENCES, 0, MAX_DESCRIPTION_LENGTH).join(' '),
   name,
-  pictures: new Array(getRandomInteger(0, 5)).fill(null).map(() => ({
+  pictures: new Array(getRandomInteger(0, MAX_PICTURES_COUNT)).fill(null).map(() => ({
     src: `http://picsum.photos/300/200?r=${Math.random()}`,
     description: getRandomArrayElement(SENTENCES),
   })),
@@ -58,7 +63,7 @@ const destinationsList = CITIES.map((name) => ({
 
 const offersList = TYPES.map((type) => ({
   type,
-  offers: getRandomLengthArray(OPTIONS, 0, 5),
+  offers: getRandomLengthArray(OPTIONS, 0, MAX_OPTIONS_COUNT),
 }));
 
 const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
@@ -87,7 +92,7 @@ const generateEvent = () => {
     dateTo: dateTo.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     type,
     destination,
-    price: getRandomInteger(0, 250),
+    price: getRandomInteger(0, MAX_EVENT_PRICE),
     offers,
     isFavorite: Boolean(getRandomInteger(0, 1)),
   };
