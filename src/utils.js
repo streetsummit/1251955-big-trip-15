@@ -1,4 +1,5 @@
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
@@ -21,11 +22,10 @@ const getRandomLengthArray = (array, min = 0, max = array.length) => {
   return randomLengthArray;
 };
 
-const makeId= () => {
+const makeId= (idLength) => {
   let text = '';
-  const symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    text += symbols.charAt(Math.floor(Math.random() * symbols.length));
+  for (let i = 0; i < idLength; i++) {
+    text += SYMBOLS.charAt(Math.floor(Math.random() * SYMBOLS.length));
   }
   return text;
 };

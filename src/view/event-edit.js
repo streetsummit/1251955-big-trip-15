@@ -40,7 +40,7 @@ const createOffersTemplate = (data, currentOffers) => (`
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${data.map((it) => {
-    const id = makeId();
+    const id = makeId(6);
 
     return (`
       <div class="event__offer-selector">
