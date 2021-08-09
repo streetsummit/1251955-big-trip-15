@@ -1,5 +1,5 @@
 import { generateEvent } from './mocks/mock-event.js';
-import { render, RenderPosition } from './utils.js';
+import { render, RenderPosition, isEscEvent } from './utils.js';
 import MenuView from './view/menu.js';
 import TripInfoView from './view/trip-info.js';
 import FilterView from './view/filter.js';
@@ -7,7 +7,6 @@ import TripSortView from './view/trip-sort.js';
 import EventListView from './view/event-list.js';
 import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
-
 
 const EVENTS_COUNT = 20;
 
@@ -19,11 +18,7 @@ const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
-const renderEvent = (list, item) => {
-  const eventElement = new EventView(item).getElement();
-  render(list, eventElement, RenderPosition.BEFOREEND);
 
-};
 render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
 render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
 render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
@@ -31,6 +26,44 @@ render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFORE
 
 const eventListComponent = new EventListView();
 render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+
+// Одновременно может быть открыта только одна форма создания/редактирования
+const renderEvent = (list, item) => {
+  const eventElement = new EventView(item).getElement();
+  const editEventElement = new EditEventView(item).getElement();
+  const openEditFormElement = eventElement.querySelector('.event__rollup-btn');
+  const closeEditFormElement = editEventElement.querySelector('.event__rollup-btn');
+  const editFormElement = editEventElement.querySelector('form');
+
+  const replaceFormToCard = () => {
+    list.replaceChild(eventElement, editEventElement);
+  };
+
+  const replaceCardToForm = () => {
+    list.replaceChild(editEventElement, eventElement);
+    document.addEventListener('keydown', onEditFormEscKeydown);
+  };
+
+  function onEditFormEscKeydown (evt) {
+    if (isEscEvent(evt)) {
+      closeEditForm();
+    }
+  }
+
+  function closeEditForm () {
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEditFormEscKeydown);
+  }
+
+  render(list, eventElement, RenderPosition.BEFOREEND);
+
+  openEditFormElement.addEventListener('click', () => replaceCardToForm());
+  closeEditFormElement.addEventListener('click', () => closeEditForm());
+  editFormElement.addEventListener('submit', () => {
+    // Сохранить изменения
+    closeEditForm();
+  });
+};
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
   renderEvent(eventListComponent.getElement(), events[i]);

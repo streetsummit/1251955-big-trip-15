@@ -17,7 +17,6 @@ export const render = (container, element, place) => {
   }
 };
 
-
 export const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
@@ -52,3 +51,5 @@ export const makeId= (idLength) => {
   }
   return text;
 };
+
+export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
