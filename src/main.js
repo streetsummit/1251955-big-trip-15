@@ -1,5 +1,5 @@
 import { generateEvent } from './mocks/mock-event.js';
-import { renderElement, RenderPosition } from './utils.js';
+import { render, RenderPosition } from './utils.js';
 import MenuView from './view/menu.js';
 import TripInfoView from './view/trip-info.js';
 import FilterView from './view/filter.js';
@@ -22,10 +22,10 @@ const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
 const eventTemplates = events.slice(1).map((el) => new EventView(el).getTemplate());
 const editEventTemplate = new EditEventView((events[0])).getTemplate();
 
-renderElement(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
-renderElement(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
-renderElement(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
-renderElement(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-renderElement(tripEventsElement, new EventListView(editEventTemplate, ...eventTemplates).getElement(), RenderPosition.BEFOREEND);
+render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
+render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
+render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
+render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
+render(tripEventsElement, new EventListView(editEventTemplate, ...eventTemplates).getElement(), RenderPosition.BEFOREEND);
 
 console.log(events);
