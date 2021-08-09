@@ -19,13 +19,20 @@ const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
-const eventTemplates = events.slice(1).map((el) => new EventView(el).getTemplate());
-const editEventTemplate = new EditEventView((events[0])).getTemplate();
+const renderEvent = (list, item) => {
+  const eventElement = new EventView(item).getElement();
+  render(list, eventElement, RenderPosition.BEFOREEND);
 
+};
 render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
 render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
 render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
 render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-render(tripEventsElement, new EventListView(editEventTemplate, ...eventTemplates).getElement(), RenderPosition.BEFOREEND);
 
-console.log(events);
+const eventListComponent = new EventListView();
+render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+
+for (let i = 0; i < EVENTS_COUNT; i++) {
+  renderEvent(eventListComponent.getElement(), events[i]);
+}
+
