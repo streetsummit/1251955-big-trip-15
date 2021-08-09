@@ -7,6 +7,7 @@ const MAX_MINUTES_GAP = 2 * 24 * 60;
 const MIN_EVENT_DURATION = 10;
 const MAX_DESCRIPTION_LENGTH = 5;
 const MAX_OPTIONS_COUNT = 5;
+const EVENTS_COUNT = 20;
 
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
 
@@ -72,7 +73,7 @@ const offersList = TYPES.map((type) => ({
 
 const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
 
-const generateEvent = () => {
+const getMockEvent = () => {
   const dateFrom = generateDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
   const dateTo = generateDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
   const type = getRandomArrayElement(TYPES);
@@ -90,4 +91,8 @@ const generateEvent = () => {
   };
 };
 
-export { generateEvent, destinationsList, getAvailableOffers };
+const getMockEvents = () => new Array(EVENTS_COUNT)
+  .fill(null)
+  .map(getMockEvent);
+
+export { getMockEvents, destinationsList, getAvailableOffers };

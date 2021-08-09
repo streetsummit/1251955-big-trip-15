@@ -1,4 +1,4 @@
-import { generateEvent } from './mocks/mock-event.js';
+import { getMockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition, isEscEvent } from './utils.js';
 import MenuView from './view/menu.js';
 // import TripInfoView from './view/trip-info.js';
@@ -9,8 +9,6 @@ import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
 import NoEventView from './view/no-event.js';
 
-const EVENTS_COUNT = 20;
-
 const siteHeaderElement = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
 const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -18,7 +16,7 @@ const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigat
 const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
+const events = getMockEvents();
 
 render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
 render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
@@ -75,7 +73,7 @@ const renderEvent = (list, item) => {
   });
 };
 
-for (let i = 0; i < EVENTS_COUNT; i++) {
+for (let i = 0; i < events.length; i++) {
   renderEvent(eventListComponent.getElement(), events[i]);
 }
 
