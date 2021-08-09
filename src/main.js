@@ -1,12 +1,13 @@
-import { renderTemplate, renderElement, RenderPosition } from './utils.js';
+import { generateEvent } from './mocks/mock-event.js';
+import { renderElement, RenderPosition } from './utils.js';
 import MenuView from './view/menu.js';
-import { createTripInfoTemplate } from './view/trip-info.js';
-import { createTripFilterTemplate } from './view/filter.js';
+import TripInfoView from './view/trip-info.js';
+import FilterView from './view/filter.js';
 import TripSortView from './view/trip-sort.js';
 import EventListView from './view/event-list.js';
 import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
-import { generateEvent } from './mocks/mock-event.js';
+
 
 const EVENTS_COUNT = 20;
 
@@ -22,8 +23,8 @@ const eventTemplates = events.slice(1).map((el) => new EventView(el).getTemplate
 const editEventTemplate = new EditEventView((events[0])).getTemplate();
 
 renderElement(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
-renderTemplate(tripMainElement, createTripInfoTemplate(), 'afterbegin');
-renderTemplate(tripFilterElement, createTripFilterTemplate(), 'beforeend');
+renderElement(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
+renderElement(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
 renderElement(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
 renderElement(tripEventsElement, new EventListView(editEventTemplate, ...eventTemplates).getElement(), RenderPosition.BEFOREEND);
 
