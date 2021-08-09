@@ -7,6 +7,7 @@ import TripSortView from './view/trip-sort.js';
 import EventListView from './view/event-list.js';
 import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
+import NoEventView from './view/no-event.js';
 
 const EVENTS_COUNT = 20;
 
@@ -20,12 +21,21 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const events = new Array(EVENTS_COUNT).fill(null).map(generateEvent);
 
 render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
-render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
 render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
-render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
 
 const eventListComponent = new EventListView();
-render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+
+const renderEventBoard = (data) => {
+  if (!data.length) {
+    render(tripEventsElement, new NoEventView().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+  render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+};
+
+renderEventBoard(events);
 
 // Одновременно может быть открыта только одна форма создания/редактирования
 const renderEvent = (list, item) => {
