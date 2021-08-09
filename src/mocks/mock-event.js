@@ -93,6 +93,7 @@ const getMockEvent = () => {
 
 const getMockEvents = () => new Array(EVENTS_COUNT)
   .fill(null)
-  .map(getMockEvent);
+  .map(getMockEvent)
+  .sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom));
 
 export { getMockEvents, destinationsList, getAvailableOffers };
