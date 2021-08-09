@@ -3,7 +3,7 @@ import MenuView from './view/menu.js';
 import { createTripInfoTemplate } from './view/trip-info.js';
 import { createTripFilterTemplate } from './view/filter.js';
 import TripSortView from './view/trip-sort.js';
-import { createEventListTemplate } from './view/event-list.js';
+import EventListView from './view/event-list.js';
 import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
 import { generateEvent } from './mocks/mock-event.js';
@@ -25,6 +25,6 @@ renderElement(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOR
 renderTemplate(tripMainElement, createTripInfoTemplate(), 'afterbegin');
 renderTemplate(tripFilterElement, createTripFilterTemplate(), 'beforeend');
 renderElement(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-renderTemplate(tripEventsElement, createEventListTemplate(editEventTemplate, ...eventTemplates), 'beforeend');
+renderElement(tripEventsElement, new EventListView(editEventTemplate, ...eventTemplates).getElement(), RenderPosition.BEFOREEND);
 
 console.log(events);
