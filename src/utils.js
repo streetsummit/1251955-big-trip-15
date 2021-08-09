@@ -45,11 +45,11 @@ export const getRandomLengthArray = (array, min = 0, max = array.length) => {
 };
 
 export const makeId= (idLength) => {
-  let text = '';
+  let id = '';
   for (let i = 0; i < idLength; i++) {
-    text += SYMBOLS.charAt(Math.floor(Math.random() * SYMBOLS.length));
+    id += SYMBOLS.charAt(Math.floor(Math.random() * SYMBOLS.length));
   }
-  return text;
+  return id;
 };
 
 export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';

@@ -45,6 +45,7 @@ const renderEvent = (list, item) => {
 
   const replaceFormToCard = () => {
     list.replaceChild(eventElement, editEventElement);
+    document.removeEventListener('keydown', onEditFormEscKeydown);
   };
 
   const replaceCardToForm = () => {
@@ -54,23 +55,18 @@ const renderEvent = (list, item) => {
 
   function onEditFormEscKeydown (evt) {
     if (isEscEvent(evt)) {
-      closeEditForm();
+      replaceFormToCard();
     }
   }
 
-  function closeEditForm () {
-    replaceFormToCard();
-    document.removeEventListener('keydown', onEditFormEscKeydown);
-  }
-
-  render(list, eventElement, RenderPosition.BEFOREEND);
-
   openEditFormElement.addEventListener('click', () => replaceCardToForm());
-  closeEditFormElement.addEventListener('click', () => closeEditForm());
+  closeEditFormElement.addEventListener('click', () => replaceFormToCard());
   editFormElement.addEventListener('submit', () => {
     // Сохранить изменения
-    closeEditForm();
+    replaceFormToCard();
   });
+
+  render(list, eventElement, RenderPosition.BEFOREEND);
 };
 
 for (let i = 0; i < events.length; i++) {

@@ -55,7 +55,7 @@ const OPTIONS = [
   },
 ];
 
-const generateDate = (from, gap) => dayjs(from).add(gap, 'minute');
+const getDate = (from, gap) => dayjs(from).add(gap, 'minute');
 
 const destinationsList = CITIES.map((name) => ({
   description: getRandomLengthArray(SENTENCES, 0, MAX_DESCRIPTION_LENGTH).join(' '),
@@ -74,8 +74,8 @@ const offersList = TYPES.map((type) => ({
 const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
 
 const getMockEvent = () => {
-  const dateFrom = generateDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
-  const dateTo = generateDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
+  const dateFrom = getDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
+  const dateTo = getDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
   const type = getRandomArrayElement(TYPES);
   const destination = getRandomArrayElement(destinationsList);
   const offers = getRandomLengthArray(getAvailableOffers(type));
