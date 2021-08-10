@@ -1,5 +1,5 @@
 import { TYPES, makeId, createElement } from '../utils.js';
-import { destinationsList, getAvailableOffers } from '../mocks/mock-event.js';
+import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
 import dayjs from 'dayjs';
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
@@ -28,7 +28,7 @@ const createDestinationSelectTemplate = (name) => (
     list="destination-list-1"
   >
   <datalist id="destination-list-1">
-    ${destinationsList.map((element) => (`
+    ${getMockDestinations().map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
   </datalist>`
@@ -82,21 +82,22 @@ const createDestinationTemplate = (currentDestination) => {
   );
 };
 
-const createEventEditTemplate = (event = {}) => {
-  const {
-    dateFrom = '2019-03-19T00:00:00.000Z',
-    dateTo = '2019-03-19T00:00:00.000Z',
-    type = 'flight',
-    destination = {},
-    price = '',
-    offers = [],
-  } = event;
+const BLANK_EVENT = {
+  dateFrom: '2019-03-19T00:00:00.000Z',
+  dateTo: '2019-03-19T00:00:00.000Z',
+  type: 'flight',
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  price: '',
+  offers: [],
+};
 
-  const {
-    description = '',
-    name = '',
-    pictures = [],
-  } = destination;
+const createEventEditTemplate = (event) => {
+  const { dateFrom, dateTo, type, destination, price, offers } = event;
+  const { description, name, pictures } = destination;
 
   const typesTemplate = createEventEditTypesTemplate(type);
   const destinationSelectTemplate = createDestinationSelectTemplate(name);
@@ -163,7 +164,7 @@ const createEventEditTemplate = (event = {}) => {
 };
 
 export default class EditEvent {
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
     this._element = null;
     this._event = event;
   }

@@ -1,4 +1,5 @@
 import { createElement } from '../utils.js';
+
 const createEventListTemplate = () => '<ul class="trip-events__list"></ul>';
 
 export default class EventList {
