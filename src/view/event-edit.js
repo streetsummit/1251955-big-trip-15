@@ -1,4 +1,4 @@
-import { TYPES, makeId } from '../utils.js';
+import { TYPES, makeId, createElement } from '../utils.js';
 import { destinationsList, getAvailableOffers } from '../mocks/mock-event.js';
 import dayjs from 'dayjs';
 
@@ -19,8 +19,8 @@ const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   </div>
 `)).join('\n');
 
-const createDestinationSelectTemplate = (name) => (`
-  <input
+const createDestinationSelectTemplate = (name) => (
+  `<input
     class="event__input  event__input--destination"
     id="event-destination-1" type="text"
     name="event-destination"
@@ -31,19 +31,19 @@ const createDestinationSelectTemplate = (name) => (`
     ${destinationsList.map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
-  </datalist>
-`);
+  </datalist>`
+);
 
 // Проблемы нейминга
-const createOffersTemplate = (data, currentOffers) => (`
-  <section class="event__section  event__section--offers">
+const createOffersTemplate = (data, currentOffers) => (
+  `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
     ${data.map((it) => {
-    const id = makeId();
+    const id = makeId(6);
 
-    return (`
-      <div class="event__offer-selector">
+    return (
+      `<div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
           id="event-offer-${id}-1"
@@ -59,29 +59,27 @@ const createOffersTemplate = (data, currentOffers) => (`
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${it.price}</span>
         </label>
-      </div>
-    `);
+      </div>`
+    );
   }).join('\n')}
     </div>
-  </section>
-`);
+  </section>`
+);
 
 const createDestinationTemplate = (currentDestination) => {
   const {pictures = []} = currentDestination;
-  return (`
-  <section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${currentDestination.description}</p>
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${currentDestination.description}</p>
 
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-      ${ pictures.map((picture) => (`
-        <img class="event__photo" src="${picture.src}" alt="${picture.description}">
-      `)).join('\n')}
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+        ${pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)).join('\n')}
       </div>
     </div>
-  </section>
-  `);
+  </section>`
+  );
 };
 
 const createEventEditTemplate = (event = {}) => {
@@ -106,60 +104,82 @@ const createEventEditTemplate = (event = {}) => {
   const offersTemplate = createOffersTemplate(availableOffers, offers);
   const destinationTemplate = createDestinationTemplate(destination);
 
-  return `<form class="event event--edit" action="#" method="post">
-    <header class="event__header">
-      <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
-          <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
-        </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+  return `<li class="trip-events__item">
+    <form class="event event--edit" action="#" method="post">
+      <header class="event__header">
+        <div class="event__type-wrapper">
+          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+            <span class="visually-hidden">Choose event type</span>
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+          </label>
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
-        <div class="event__type-list">
-          <fieldset class="event__type-group">
-            <legend class="visually-hidden">Event type</legend>
+          <div class="event__type-list">
+            <fieldset class="event__type-group">
+              <legend class="visually-hidden">Event type</legend>
 
-            ${typesTemplate}
-          </fieldset>
+              ${typesTemplate}
+            </fieldset>
+          </div>
         </div>
-      </div>
 
-      <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          ${type}
-        </label>
-        ${destinationSelectTemplate}
-      </div>
+        <div class="event__field-group  event__field-group--destination">
+          <label class="event__label  event__type-output" for="event-destination-1">
+            ${type}
+          </label>
+          ${destinationSelectTemplate}
+        </div>
 
-      <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
-        &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
-      </div>
+        <div class="event__field-group  event__field-group--time">
+          <label class="visually-hidden" for="event-start-time-1">From</label>
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
+          &mdash;
+          <label class="visually-hidden" for="event-end-time-1">To</label>
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
+        </div>
 
-      <div class="event__field-group  event__field-group--price">
-        <label class="event__label" for="event-price-1">
-          <span class="visually-hidden">Price</span>
-          &euro;
-        </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
-      </div>
+        <div class="event__field-group  event__field-group--price">
+          <label class="event__label" for="event-price-1">
+            <span class="visually-hidden">Price</span>
+            &euro;
+          </label>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+        </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
-    </header>
-    <section class="event__details">
+        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      </header>
+      <section class="event__details">
 
-      ${ availableOffers.length ? offersTemplate : ''}
+        ${ availableOffers.length ? offersTemplate : ''}
 
-      ${description || pictures.length ? destinationTemplate : ''}
-    </section>
-  </form>`;
+        ${description || pictures.length ? destinationTemplate : ''}
+      </section>
+    </form>
+  </li>`;
 };
 
-export { createEventEditTemplate };
+export default class EditEvent {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

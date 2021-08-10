@@ -1,15 +1,38 @@
-const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+export const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-const getRandomInteger = (min, max) => {
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+export const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(min, max));
   const result = Math.random() * (upper - lower + 1) + lower;
   return Math.floor(result);
 };
 
-const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
+export const getRandomArrayElement = (array) => array[getRandomInteger(0, array.length - 1)];
 
-const getRandomLengthArray = (array, min = 0, max = array.length) => {
+export const getRandomLengthArray = (array, min = 0, max = array.length) => {
   const dataArray = array.slice();
   const randomLengthArray = [];
   const randomLength = getRandomInteger(min, max);
@@ -21,19 +44,12 @@ const getRandomLengthArray = (array, min = 0, max = array.length) => {
   return randomLengthArray;
 };
 
-const makeId= () => {
-  let text = '';
-  const symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    text += symbols.charAt(Math.floor(Math.random() * symbols.length));
+export const makeId= (idLength) => {
+  let id = '';
+  for (let i = 0; i < idLength; i++) {
+    id += SYMBOLS.charAt(Math.floor(Math.random() * SYMBOLS.length));
   }
-  return text;
+  return id;
 };
 
-export {
-  TYPES,
-  getRandomInteger,
-  getRandomArrayElement,
-  getRandomLengthArray,
-  makeId
-};
+export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
