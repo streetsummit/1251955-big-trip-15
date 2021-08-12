@@ -1,5 +1,7 @@
-import { TYPES, makeId, createElement } from '../utils.js';
+import { TYPES, makeId } from '../utils.js';
 import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+import AbstractView from './abstract.js';
+
 import dayjs from 'dayjs';
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
@@ -163,24 +165,13 @@ const createEventEditTemplate = (event) => {
   </li>`;
 };
 
-export default class EditEvent {
+export default class EditEvent extends AbstractView {
   constructor(event = BLANK_EVENT) {
-    this._element = null;
+    super();
     this._event = event;
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
