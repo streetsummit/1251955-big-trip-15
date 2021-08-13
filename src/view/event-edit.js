@@ -1,5 +1,8 @@
-import { TYPES, makeId } from '../utils.js';
+import { TYPES } from '../utils/constants.js';
+import { makeId } from '../utils/common.js';
+
 import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+
 import AbstractView from './abstract.js';
 
 import dayjs from 'dayjs';

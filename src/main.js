@@ -1,5 +1,6 @@
 import { getMockEvents } from './mocks/mock-event.js';
-import { render, RenderPosition, isEscEvent } from './utils.js';
+import { render, RenderPosition, replace } from './utils/render.js';
+import { isEscEvent } from './utils/common.js';
 import MenuView from './view/menu.js';
 // import TripInfoView from './view/trip-info.js';
 import FilterView from './view/filter.js';
@@ -18,19 +19,19 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = getMockEvents();
 
-render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
-render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
+render(siteMenuElement, new MenuView(), RenderPosition.BEFOREEND);
+render(tripFilterElement, new FilterView(), RenderPosition.BEFOREEND);
 
 const eventListComponent = new EventListView();
 
 const renderEventBoard = (data) => {
   if (!data.length) {
-    render(tripEventsElement, new NoEventView().getElement(), RenderPosition.BEFOREEND);
+    render(tripEventsElement, new NoEventView(), RenderPosition.BEFOREEND);
     return;
   }
-  // render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
-  render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-  render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+  // render(tripMainElement, new TripInfoView(), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new TripSortView(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventListComponent, RenderPosition.BEFOREEND);
 };
 
 renderEventBoard(events);
@@ -40,11 +41,11 @@ const renderEvent = (list, item) => {
   const eventComponent = new EventView(item);
   const editEventComponent = new EditEventView(item);
   const replaceFormToCard = () => {
-    list.replaceChild(eventComponent.getElement(), editEventComponent.getElement());
+    replace(eventComponent, editEventComponent);
   };
 
   const replaceCardToForm = () => {
-    list.replaceChild(editEventComponent.getElement(), eventComponent.getElement());
+    replace(editEventComponent, eventComponent);
   };
 
   const onEditFormEscKeydown = (evt) => {
@@ -71,10 +72,10 @@ const renderEvent = (list, item) => {
     document.removeEventListener('keydown', onEditFormEscKeydown);
   });
 
-  render(list, eventComponent.getElement(), RenderPosition.BEFOREEND);
+  render(list, eventComponent, RenderPosition.BEFOREEND);
 };
 
 for (let i = 0; i < events.length; i++) {
-  renderEvent(eventListComponent.getElement(), events[i]);
+  renderEvent(eventListComponent, events[i]);
 }
 

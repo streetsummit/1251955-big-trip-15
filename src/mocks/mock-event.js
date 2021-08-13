@@ -1,4 +1,6 @@
-import { TYPES, getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
+import { getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils/common.js';
+import { TYPES } from '../utils/constants.js';
+
 import dayjs from 'dayjs';
 
 const MAX_PICTURES_COUNT = 5;
