@@ -37,36 +37,41 @@ renderEventBoard(events);
 
 // Одновременно может быть открыта только одна форма создания/редактирования
 const renderEvent = (list, item) => {
-  const eventElement = new EventView(item).getElement();
-  const editEventElement = new EditEventView(item).getElement();
-  const openEditFormElement = eventElement.querySelector('.event__rollup-btn');
-  const closeEditFormElement = editEventElement.querySelector('.event__rollup-btn');
-  const editFormElement = editEventElement.querySelector('form');
-
+  const eventComponent = new EventView(item);
+  const editEventComponent = new EditEventView(item);
   const replaceFormToCard = () => {
-    list.replaceChild(eventElement, editEventElement);
-    document.removeEventListener('keydown', onEditFormEscKeydown);
+    list.replaceChild(eventComponent.getElement(), editEventComponent.getElement());
   };
 
   const replaceCardToForm = () => {
-    list.replaceChild(editEventElement, eventElement);
-    document.addEventListener('keydown', onEditFormEscKeydown);
+    list.replaceChild(editEventComponent.getElement(), eventComponent.getElement());
   };
 
-  function onEditFormEscKeydown (evt) {
+  const onEditFormEscKeydown = (evt) => {
     if (isEscEvent(evt)) {
+      evt.preventDefault();
       replaceFormToCard();
+      document.removeEventListener('keydown', onEditFormEscKeydown);
     }
-  }
+  };
 
-  openEditFormElement.addEventListener('click', () => replaceCardToForm());
-  closeEditFormElement.addEventListener('click', () => replaceFormToCard());
-  editFormElement.addEventListener('submit', () => {
-    // Сохранить изменения
-    replaceFormToCard();
+  eventComponent.setEditClickHandler(() => {
+    replaceCardToForm();
+    document.addEventListener('keydown', onEditFormEscKeydown);
   });
 
-  render(list, eventElement, RenderPosition.BEFOREEND);
+  editEventComponent.setEditClickHandler(() => {
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEditFormEscKeydown);
+  });
+
+  editEventComponent.setSaveClickHandler(() => {
+    // Сохранить изменения
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEditFormEscKeydown);
+  });
+
+  render(list, eventComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 for (let i = 0; i < events.length; i++) {

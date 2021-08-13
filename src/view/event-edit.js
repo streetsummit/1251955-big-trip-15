@@ -169,9 +169,31 @@ export default class EditEvent extends AbstractView {
   constructor(event = BLANK_EVENT) {
     super();
     this._event = event;
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._saveClickHandler = this._saveClickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
+  }
+
+  _saveClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveClick();
+  }
+
+  setSaveClickHandler(callback) {
+    this._callback.saveClick = callback;
+    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
   }
 }
