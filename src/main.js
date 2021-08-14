@@ -1,5 +1,6 @@
 import { getMockEvents } from './mocks/mock-event.js';
-import { render, RenderPosition, isEscEvent } from './utils.js';
+import { render, RenderPosition, replace } from './utils/render.js';
+import { isEscEvent } from './utils/common.js';
 import MenuView from './view/menu.js';
 // import TripInfoView from './view/trip-info.js';
 import FilterView from './view/filter.js';
@@ -18,58 +19,63 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 const events = getMockEvents();
 
-render(siteMenuElement, new MenuView().getElement(), RenderPosition.BEFOREEND);
-render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
+render(siteMenuElement, new MenuView(), RenderPosition.BEFOREEND);
+render(tripFilterElement, new FilterView(), RenderPosition.BEFOREEND);
 
 const eventListComponent = new EventListView();
 
 const renderEventBoard = (data) => {
   if (!data.length) {
-    render(tripEventsElement, new NoEventView().getElement(), RenderPosition.BEFOREEND);
+    render(tripEventsElement, new NoEventView(), RenderPosition.BEFOREEND);
     return;
   }
-  // render(tripMainElement, new TripInfoView().getElement(), RenderPosition.AFTERBEGIN);
-  render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-  render(tripEventsElement, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+  // render(tripMainElement, new TripInfoView(), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new TripSortView(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventListComponent, RenderPosition.BEFOREEND);
 };
 
 renderEventBoard(events);
 
 // Одновременно может быть открыта только одна форма создания/редактирования
 const renderEvent = (list, item) => {
-  const eventElement = new EventView(item).getElement();
-  const editEventElement = new EditEventView(item).getElement();
-  const openEditFormElement = eventElement.querySelector('.event__rollup-btn');
-  const closeEditFormElement = editEventElement.querySelector('.event__rollup-btn');
-  const editFormElement = editEventElement.querySelector('form');
-
+  const eventComponent = new EventView(item);
+  const editEventComponent = new EditEventView(item);
   const replaceFormToCard = () => {
-    list.replaceChild(eventElement, editEventElement);
-    document.removeEventListener('keydown', onEditFormEscKeydown);
+    replace(eventComponent, editEventComponent);
   };
 
   const replaceCardToForm = () => {
-    list.replaceChild(editEventElement, eventElement);
-    document.addEventListener('keydown', onEditFormEscKeydown);
+    replace(editEventComponent, eventComponent);
   };
 
-  function onEditFormEscKeydown (evt) {
+  const onEditFormEscKeydown = (evt) => {
     if (isEscEvent(evt)) {
+      evt.preventDefault();
       replaceFormToCard();
+      document.removeEventListener('keydown', onEditFormEscKeydown);
     }
-  }
+  };
 
-  openEditFormElement.addEventListener('click', () => replaceCardToForm());
-  closeEditFormElement.addEventListener('click', () => replaceFormToCard());
-  editFormElement.addEventListener('submit', () => {
-    // Сохранить изменения
-    replaceFormToCard();
+  eventComponent.setEditClickHandler(() => {
+    replaceCardToForm();
+    document.addEventListener('keydown', onEditFormEscKeydown);
   });
 
-  render(list, eventElement, RenderPosition.BEFOREEND);
+  editEventComponent.setEditClickHandler(() => {
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEditFormEscKeydown);
+  });
+
+  editEventComponent.setSaveClickHandler(() => {
+    // Сохранить изменения
+    replaceFormToCard();
+    document.removeEventListener('keydown', onEditFormEscKeydown);
+  });
+
+  render(list, eventComponent, RenderPosition.BEFOREEND);
 };
 
 for (let i = 0; i < events.length; i++) {
-  renderEvent(eventListComponent.getElement(), events[i]);
+  renderEvent(eventListComponent, events[i]);
 }
 

@@ -1,5 +1,10 @@
-import { TYPES, makeId, createElement } from '../utils.js';
-import { destinationsList, getAvailableOffers } from '../mocks/mock-event.js';
+import { TYPES } from '../utils/constants.js';
+import { makeId } from '../utils/common.js';
+
+import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+
+import AbstractView from './abstract.js';
+
 import dayjs from 'dayjs';
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
@@ -28,7 +33,7 @@ const createDestinationSelectTemplate = (name) => (
     list="destination-list-1"
   >
   <datalist id="destination-list-1">
-    ${destinationsList.map((element) => (`
+    ${getMockDestinations().map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
   </datalist>`
@@ -82,21 +87,22 @@ const createDestinationTemplate = (currentDestination) => {
   );
 };
 
-const createEventEditTemplate = (event = {}) => {
-  const {
-    dateFrom = '2019-03-19T00:00:00.000Z',
-    dateTo = '2019-03-19T00:00:00.000Z',
-    type = 'flight',
-    destination = {},
-    price = '',
-    offers = [],
-  } = event;
+const BLANK_EVENT = {
+  dateFrom: '2019-03-19T00:00:00.000Z',
+  dateTo: '2019-03-19T00:00:00.000Z',
+  type: 'flight',
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  price: '',
+  offers: [],
+};
 
-  const {
-    description = '',
-    name = '',
-    pictures = [],
-  } = destination;
+const createEventEditTemplate = (event) => {
+  const { dateFrom, dateTo, type, destination, price, offers } = event;
+  const { description, name, pictures } = destination;
 
   const typesTemplate = createEventEditTypesTemplate(type);
   const destinationSelectTemplate = createDestinationSelectTemplate(name);
@@ -162,24 +168,35 @@ const createEventEditTemplate = (event = {}) => {
   </li>`;
 };
 
-export default class EditEvent {
-  constructor(event) {
-    this._element = null;
+export default class EditEvent extends AbstractView {
+  constructor(event = BLANK_EVENT) {
+    super();
     this._event = event;
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._saveClickHandler = this._saveClickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
+  }
+
+  _saveClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveClick();
+  }
+
+  setSaveClickHandler(callback) {
+    this._callback.saveClick = callback;
+    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
   }
 }

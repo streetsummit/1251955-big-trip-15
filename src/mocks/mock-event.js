@@ -1,4 +1,6 @@
-import { TYPES, getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils.js';
+import { getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils/common.js';
+import { TYPES } from '../utils/constants.js';
+
 import dayjs from 'dayjs';
 
 const MAX_PICTURES_COUNT = 5;
@@ -57,7 +59,7 @@ const OPTIONS = [
 
 const getDate = (from, gap) => dayjs(from).add(gap, 'minute');
 
-const destinationsList = CITIES.map((name) => ({
+const getMockDestinations = () => CITIES.map((name) => ({
   description: getRandomLengthArray(SENTENCES, 0, MAX_DESCRIPTION_LENGTH).join(' '),
   name,
   pictures: new Array(getRandomInteger(0, MAX_PICTURES_COUNT)).fill(null).map(() => ({
@@ -66,18 +68,18 @@ const destinationsList = CITIES.map((name) => ({
   })),
 }));
 
-const offersList = TYPES.map((type) => ({
+const getMockOffers = () => TYPES.map((type) => ({
   type,
   offers: getRandomLengthArray(OPTIONS, 0, MAX_OPTIONS_COUNT),
 }));
 
-const getAvailableOffers = (eventType) => (offersList.find((el) => el.type === eventType)).offers;
+const getAvailableOffers = (eventType) => (getMockOffers().find((el) => el.type === eventType)).offers;
 
 const getMockEvent = () => {
   const dateFrom = getDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
   const dateTo = getDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
   const type = getRandomArrayElement(TYPES);
-  const destination = getRandomArrayElement(destinationsList);
+  const destination = getRandomArrayElement(getMockDestinations());
   const offers = getRandomLengthArray(getAvailableOffers(type));
 
   return {
@@ -96,4 +98,4 @@ const getMockEvents = () => new Array(EVENTS_COUNT)
   .map(getMockEvent)
   .sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom));
 
-export { getMockEvents, destinationsList, getAvailableOffers };
+export { getMockEvents, getMockDestinations, getAvailableOffers };
