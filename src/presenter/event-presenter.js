@@ -4,11 +4,14 @@ import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
 import EventView from '../view/event.js';
 import EditEventView from '../view/event-edit.js';
+import { render, RenderPosition, replace } from '../utils/render.js';
+import { isEscEvent } from '../utils/common.js';
 
 
 export default class EventBoard {
-  constructor(boardContainer) {
+  constructor(boardContainer, infoContainer) {
     this._boardContainer = boardContainer;
+    this._infoContainer = infoContainer;
     this._noEventComponent = new NoEventView();
     this._infoComponent = new InfoView();
     this._sortComponent = new SortView();
@@ -17,32 +20,78 @@ export default class EventBoard {
 
   init(events) {
     this._events = events.slice();
-    // Метод для инициализации (начала работы) модуля,
-    // малая часть текущей функции renderBoard в main.js
+    this._renderEventBoard();
   }
 
   _renderNoEvents() {
-    // Метод для рендеринга заглушки
+    render(this._boardContainer, this._noEventComponent, RenderPosition.BEFOREEND);
   }
 
   _renderInfo() {
-    // Метод для рендеринга инфо о путешествии (маршрут, даты, стоимость)
+    render(this._infoContainer, this._infoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderSort() {
-    // Метод для рендеринга сортировки
+    render(this._boardContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderEvent() {
-    // Метод для рендеринга события
+  _renderEvent(event) {
+    const eventComponent = new EventView(event);
+    const editEventComponent = new EditEventView(event);
+
+    const replaceFormToCard = () => {
+      replace(eventComponent, editEventComponent);
+    };
+
+    const replaceCardToForm = () => {
+      replace(editEventComponent, eventComponent);
+    };
+
+    const onEditFormEscKeydown = (evt) => {
+      if (isEscEvent(evt)) {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', onEditFormEscKeydown);
+      }
+    };
+
+    eventComponent.setEditClickHandler(() => {
+      replaceCardToForm();
+      document.addEventListener('keydown', onEditFormEscKeydown);
+    });
+
+    editEventComponent.setEditClickHandler(() => {
+      replaceFormToCard();
+      document.removeEventListener('keydown', onEditFormEscKeydown);
+    });
+
+    editEventComponent.setSaveClickHandler(() => {
+    // Сохранить изменения
+      replaceFormToCard();
+      document.removeEventListener('keydown', onEditFormEscKeydown);
+    });
+
+    render(this._eventListComponent, eventComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderEvents() {
+    this._events
+      .slice()
+      .forEach((el) => this._renderEvent(el));
   }
 
   _renderEventList() {
-    // Метод для рендеринга списка событий
+    render(this._boardContainer, this._eventListComponent, RenderPosition.BEFOREEND);
   }
 
   _renderEventBoard() {
-    // Метод для инициализации (начала работы) модуля,
-    // бОльшая часть текущей функции renderEventBoard в main.js
+    if (!this._events.length) {
+      this._renderNoEvents();
+      return;
+    }
+    this._renderInfo();
+    this._renderSort();
+    this._renderEventList();
+    this._renderEvents();
   }
 }
