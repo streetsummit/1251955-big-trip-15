@@ -2,39 +2,39 @@ import { getMockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition, replace } from './utils/render.js';
 import { isEscEvent } from './utils/common.js';
 import MenuView from './view/menu.js';
-// import TripInfoView from './view/trip-info.js';
+// import InfoView from './view/trip-info.js';
 import FilterView from './view/filter.js';
-import TripSortView from './view/trip-sort.js';
+import SortView from './view/trip-sort.js';
 import EventListView from './view/event-list.js';
 import EventView from './view/event.js';
 import EditEventView from './view/event-edit.js';
 import NoEventView from './view/no-event.js';
 
-const siteHeaderElement = document.querySelector('.page-header');
+const siteHeaderContainer = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');
-const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
-// const tripMainElement = siteHeaderElement.querySelector('.trip-main');
-const tripFilterElement = siteHeaderElement.querySelector('.trip-controls__filters');
-const tripEventsElement = siteMainElement.querySelector('.trip-events');
+const siteMenuContainer = siteHeaderContainer.querySelector('.trip-controls__navigation');
+// const infoContainer = siteHeaderContainer.querySelector('.trip-main');
+const filtersContainer = siteHeaderContainer.querySelector('.trip-controls__filters');
+const eventsContainer = siteMainElement.querySelector('.trip-events');
 
 const events = getMockEvents();
 
-render(siteMenuElement, new MenuView(), RenderPosition.BEFOREEND);
-render(tripFilterElement, new FilterView(), RenderPosition.BEFOREEND);
+render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
+render(filtersContainer, new FilterView(), RenderPosition.BEFOREEND);
 
 const eventListComponent = new EventListView();
 
-const renderEventBoard = (data) => {
+const renderEventBoard = (container, data) => {
   if (!data.length) {
-    render(tripEventsElement, new NoEventView(), RenderPosition.BEFOREEND);
+    render(container, new NoEventView(), RenderPosition.BEFOREEND);
     return;
   }
-  // render(tripMainElement, new TripInfoView(), RenderPosition.AFTERBEGIN);
-  render(tripEventsElement, new TripSortView(), RenderPosition.BEFOREEND);
-  render(tripEventsElement, eventListComponent, RenderPosition.BEFOREEND);
+  // render(infoContainer, new InfoView(), RenderPosition.AFTERBEGIN);
+  render(container, new SortView(), RenderPosition.BEFOREEND);
+  render(container, eventListComponent, RenderPosition.BEFOREEND);
 };
 
-renderEventBoard(events);
+renderEventBoard(eventsContainer, events);
 
 // Одновременно может быть открыта только одна форма создания/редактирования
 const renderEvent = (list, item) => {
