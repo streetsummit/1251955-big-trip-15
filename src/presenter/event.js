@@ -1,6 +1,6 @@
 import EventView from '../view/event.js';
 import EditEventView from '../view/event-edit.js';
-import { render, RenderPosition, replace } from '../utils/render.js';
+import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
 
 
@@ -20,13 +20,36 @@ export default class Event {
   init(event) {
     this._event = event;
 
+    const prevEventComponent = this._eventComponent;
+    const prevEditEventComponent = this._editEventComponent;
+
     this._eventComponent = new EventView(event);
     this._editEventComponent = new EditEventView(event);
 
     this._eventComponent.setEditClickHandler(this._handleShowFormButtonClick);
     this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
-    render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
+
+    if (prevEventComponent === null || prevEditEventComponent === null) {
+      render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this._eventListContainer.getElement().contains(this.prevEventComponent.getElement())) {
+      replace(this._eventComponent, prevEventComponent);
+    }
+
+    if (this._eventListContainer.getElement().contains(this.prevEditEventComponent.getElement())) {
+      replace(this._editEventComponent, prevEditEventComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEditEventComponent);
+  }
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._editEventComponent);
   }
 
   _escKeyDownHandler(evt) {
