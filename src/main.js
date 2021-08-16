@@ -2,7 +2,7 @@ import { getMockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition } from './utils/render.js';
 import MenuView from './view/menu.js';
 import FilterView from './view/filter.js';
-import EventBoardPresenter from './presenter/event-presenter.js';
+import EventBoardPresenter from './presenter/event-board.js';
 
 const siteHeaderContainer = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');

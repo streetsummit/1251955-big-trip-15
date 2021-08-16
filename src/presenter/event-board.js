@@ -2,11 +2,8 @@ import InfoView from '../view/trip-info.js';
 import SortView from '../view/trip-sort.js';
 import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
-import EventView from '../view/event.js';
-import EditEventView from '../view/event-edit.js';
-import { render, RenderPosition, replace } from '../utils/render.js';
-import { isEscEvent } from '../utils/common.js';
-
+import { render, RenderPosition } from '../utils/render.js';
+import EventPresenter from './event.js';
 
 export default class EventBoard {
   constructor(boardContainer, infoContainer) {
@@ -36,42 +33,8 @@ export default class EventBoard {
   }
 
   _renderEvent(event) {
-    const eventComponent = new EventView(event);
-    const editEventComponent = new EditEventView(event);
-
-    const replaceFormToCard = () => {
-      replace(eventComponent, editEventComponent);
-    };
-
-    const replaceCardToForm = () => {
-      replace(editEventComponent, eventComponent);
-    };
-
-    const onEditFormEscKeydown = (evt) => {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', onEditFormEscKeydown);
-      }
-    };
-
-    eventComponent.setEditClickHandler(() => {
-      replaceCardToForm();
-      document.addEventListener('keydown', onEditFormEscKeydown);
-    });
-
-    editEventComponent.setEditClickHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener('keydown', onEditFormEscKeydown);
-    });
-
-    editEventComponent.setSaveClickHandler(() => {
-    // Сохранить изменения
-      replaceFormToCard();
-      document.removeEventListener('keydown', onEditFormEscKeydown);
-    });
-
-    render(this._eventListComponent, eventComponent, RenderPosition.BEFOREEND);
+    const eventPresenter = new EventPresenter(this._eventListComponent);
+    eventPresenter.init(event);
   }
 
   _renderEvents() {
