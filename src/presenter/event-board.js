@@ -13,6 +13,7 @@ export default class EventBoard {
     this._infoComponent = new InfoView();
     this._sortComponent = new SortView();
     this._eventListComponent = new EventListView();
+    this._eventPresenter = new Map();
   }
 
   init(events) {
@@ -35,12 +36,18 @@ export default class EventBoard {
   _renderEvent(event) {
     const eventPresenter = new EventPresenter(this._eventListComponent);
     eventPresenter.init(event);
+    this._eventPresenter.set(event.id, eventPresenter);
   }
 
   _renderEvents() {
     this._events
       .slice()
       .forEach((el) => this._renderEvent(el));
+  }
+
+  _clearEventList() {
+    this._eventPresenter.forEach((presenter) => presenter.destroy());
+    this._eventPresenter.clear();
   }
 
   _renderEventList() {
