@@ -2,8 +2,9 @@ import InfoView from '../view/trip-info.js';
 import SortView from '../view/trip-sort.js';
 import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
-import { render, RenderPosition } from '../utils/render.js';
 import EventPresenter from './event.js';
+import { render, RenderPosition } from '../utils/render.js';
+import { updateItem } from '../utils/common.js';
 
 export default class EventBoard {
   constructor(boardContainer, infoContainer) {
@@ -14,11 +15,18 @@ export default class EventBoard {
     this._sortComponent = new SortView();
     this._eventListComponent = new EventListView();
     this._eventPresenter = new Map();
+
+    this._handleEventChange = this._handleEventChange.bind(this);
   }
 
   init(events) {
     this._events = events.slice();
     this._renderEventBoard();
+  }
+
+  _handleEventChange(updatedEvent) {
+    this._events = updateItem(this._events, updatedEvent);
+    this._eventPresenter.get(updatedEvent.id).init(updatedEvent);
   }
 
   _renderNoEvents() {
