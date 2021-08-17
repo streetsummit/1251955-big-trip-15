@@ -192,7 +192,7 @@ export default class EditEvent extends AbstractView {
 
   _saveClickHandler(evt) {
     evt.preventDefault();
-    this._callback.saveClick();
+    this._callback.saveClick(this._event);
   }
 
   setSaveClickHandler(callback) {

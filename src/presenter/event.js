@@ -5,13 +5,15 @@ import { isEscEvent } from '../utils/common.js';
 
 
 export default class Event {
-  constructor(eventListContainer) {
+  constructor(eventListContainer, changeData) {
     this._eventListContainer = eventListContainer;
+    this._changeData = changeData;
 
     this._eventComponent = null;
     this._editEventComponent = null;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleShowFormButtonClick = this._handleShowFormButtonClick.bind(this);
     this._handleHideFormButtonClick = this._handleHideFormButtonClick.bind(this);
     this._handleSaveClick = this._handleSaveClick.bind(this);
@@ -27,6 +29,7 @@ export default class Event {
     this._editEventComponent = new EditEventView(event);
 
     this._eventComponent.setEditClickHandler(this._handleShowFormButtonClick);
+    this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
 
@@ -77,7 +80,20 @@ export default class Event {
     this._replaceFormToCard();
   }
 
-  _handleSaveClick() {
+  _handleFavoriteClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._event,
+        {
+          isFavorite: !this._event.isFavorite,
+        },
+      ),
+    );
+  }
+
+  _handleSaveClick(event) {
+    this._changeData(event);
     this._replaceFormToCard();
   }
 }

@@ -42,7 +42,7 @@ export default class EventBoard {
   }
 
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._eventListComponent);
+    const eventPresenter = new EventPresenter(this._eventListComponent, this._handleEventChange);
     eventPresenter.init(event);
     this._eventPresenter.set(event.id, eventPresenter);
   }
