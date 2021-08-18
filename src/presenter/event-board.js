@@ -18,6 +18,7 @@ export default class EventBoard {
 
     this._handleEventChange = this._handleEventChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(events) {
@@ -34,6 +35,12 @@ export default class EventBoard {
     this._eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
+  _handleSortTypeChange(sortType) {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Редерим список по новым данным
+  }
+
   _renderNoEvents() {
     render(this._boardContainer, this._noEventComponent, RenderPosition.BEFOREEND);
   }
@@ -44,6 +51,7 @@ export default class EventBoard {
 
   _renderSort() {
     render(this._boardContainer, this._sortComponent, RenderPosition.BEFOREEND);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderEvent(event) {
