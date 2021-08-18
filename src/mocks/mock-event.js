@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomArrayElement, getRandomLengthArray } from '../utils/common.js';
+import { getRandomInteger, getRandomArrayElement, getRandomLengthArray, makeId } from '../utils/common.js';
 import { TYPES } from '../utils/constants.js';
 
 import dayjs from 'dayjs';
@@ -10,6 +10,7 @@ const MIN_EVENT_DURATION = 10;
 const MAX_DESCRIPTION_LENGTH = 5;
 const MAX_OPTIONS_COUNT = 5;
 const EVENTS_COUNT = 20;
+const ID_LENGTH = 7;
 
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'London'];
 
@@ -83,6 +84,7 @@ const getMockEvent = () => {
   const offers = getRandomLengthArray(getAvailableOffers(type));
 
   return {
+    id: makeId(ID_LENGTH),
     dateFrom: dateFrom.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     dateTo: dateTo.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
     type,
