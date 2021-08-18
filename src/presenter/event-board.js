@@ -17,6 +17,7 @@ export default class EventBoard {
     this._eventPresenter = new Map();
 
     this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(events) {
@@ -27,6 +28,10 @@ export default class EventBoard {
   _handleEventChange(updatedEvent) {
     this._events = updateItem(this._events, updatedEvent);
     this._eventPresenter.get(updatedEvent.id).init(updatedEvent);
+  }
+
+  _handleModeChange() {
+    this._eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
   _renderNoEvents() {
@@ -42,7 +47,7 @@ export default class EventBoard {
   }
 
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._eventListComponent, this._handleEventChange);
+    const eventPresenter = new EventPresenter(this._eventListComponent, this._handleEventChange,this._handleModeChange);
     eventPresenter.init(event);
     this._eventPresenter.set(event.id, eventPresenter);
   }
