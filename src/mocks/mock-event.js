@@ -1,6 +1,5 @@
 import { getRandomInteger, getRandomArrayElement, getRandomLengthArray, makeId } from '../utils/common.js';
 import { TYPES } from '../utils/constants.js';
-import { sortByDate } from '../utils/task-utils.js';
 
 import dayjs from 'dayjs';
 
