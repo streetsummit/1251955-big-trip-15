@@ -1,5 +1,6 @@
 import { getRandomInteger, getRandomArrayElement, getRandomLengthArray, makeId } from '../utils/common.js';
 import { TYPES } from '../utils/constants.js';
+import { sortByDate } from '../utils/task-utils.js';
 
 import dayjs from 'dayjs';
 
@@ -97,7 +98,6 @@ const getMockEvent = () => {
 
 const getMockEvents = () => new Array(EVENTS_COUNT)
   .fill(null)
-  .map(getMockEvent)
-  .sort((a, b) => dayjs(a.dateFrom) - dayjs(b.dateFrom));
+  .map(getMockEvent);
 
 export { getMockEvents, getMockDestinations, getAvailableOffers };

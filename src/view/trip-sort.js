@@ -44,13 +44,12 @@ export default class TripSort extends AbstractView {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
-
     evt.preventDefault();
-    this._callback.SortTypeChange(evt.target.dataset.SortType);
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
   setSortTypeChangeHandler(callback) {
-    this._callback.SortTypeChange = callback;
-    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('change', this._sortTypeChangeHandler);
   }
 }
