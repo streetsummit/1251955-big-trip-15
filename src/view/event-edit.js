@@ -51,6 +51,7 @@ const createOffersListTemplate = (availableOffers, currentOffers) => {
           id="event-offer-${id}-1"
           type="checkbox"
           name="event-offer-${id}"
+          data-title="${availableOffer.title}"
           ${currentOffers.some((currentOffer) => currentOffer.title === availableOffer.title) ? 'checked' : ''}
         >
         <label
@@ -182,6 +183,9 @@ export default class EditEvent extends AbstractView {
     this._data = EditEvent.parseEventToData(event);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -232,6 +236,12 @@ export default class EditEvent extends AbstractView {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, prevElement);
+    this.restoreHandlers();
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveClickHandler();
   }
 
   updateData(update, justDataUpdating) {
@@ -251,5 +261,31 @@ export default class EditEvent extends AbstractView {
 
     this.updateElement();
   }
+
+  _setInnerHandlers() {
+    if (this._data.hasAvailableOffers) {
+      this.getElement()
+        .querySelector('.event__available-offers')
+        .addEventListener('change',this._offersChangeHandler);
+    }
+  }
+
+  // Данные меняются при каждом клике по чекбоксу, а следовало бы только при сейве
+  _offersChangeHandler(evt) {
+    const checkedOffersElements = this.getElement()
+      .querySelector('.event__available-offers')
+      .querySelectorAll('input[type=checkbox]:checked');
+
+    const checkedOffers = [];
+    checkedOffersElements.forEach((element) => {
+      const offerTitle = element.dataset.title;
+      const checkedOffer = getAvailableOffers(this._data.type).find((el) => el.title === offerTitle);
+      checkedOffers.push(checkedOffer);
+    });
+
+    evt.preventDefault();
+    this.updateData({
+      offers: checkedOffers,
+    }, true);
   }
 }
