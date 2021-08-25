@@ -198,4 +198,15 @@ export default class EditEvent extends AbstractView {
     this._callback.saveClick = callback;
     this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
   }
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+  }
+
+  }
 }
