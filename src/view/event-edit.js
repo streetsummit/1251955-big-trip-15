@@ -39,15 +39,13 @@ const createDestinationSelectTemplate = (name) => (
   </datalist>`
 );
 
-const createOffersTemplate = (availableOffers, currentOffers) => (
-  `<section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">
-    ${availableOffers.map((availableOffer) => {
-    const id = makeId(6);
 
-    return (
-      `<div class="event__offer-selector">
+const createOffersListTemplate = (availableOffers, currentOffers) => {
+  let template = '';
+
+  availableOffers.forEach((availableOffer) => {
+    const id = makeId(6);
+    template += `<div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
           id="event-offer-${id}-1"
@@ -63,12 +61,23 @@ const createOffersTemplate = (availableOffers, currentOffers) => (
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${availableOffer.price}</span>
         </label>
-      </div>`
-    );
-  }).join('\n')}
-    </div>
-  </section>`
-);
+      </div>`;
+  });
+  return template;
+};
+
+const createOffersTemplate = (availableOffers, currentOffers, hasAvailableOffers) => {
+  if (hasAvailableOffers) {
+    return `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createOffersListTemplate(availableOffers, currentOffers)}
+      </div>
+    </section>`;
+  } else {
+    return '';
+  }
+};
 
 const createDestinationTemplate = (currentDestination) => {
   const {pictures = []} = currentDestination;
@@ -99,14 +108,14 @@ const BLANK_EVENT = {
   offers: [],
 };
 
-const createEventEditTemplate = (event) => {
-  const { dateFrom, dateTo, type, destination, price, offers } = event;
+const createEventEditTemplate = (data) => {
+  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers } = data;
   const { description, name, pictures } = destination;
 
   const typesTemplate = createEventEditTypesTemplate(type);
   const destinationSelectTemplate = createDestinationSelectTemplate(name);
   const availableOffers = getAvailableOffers(type);
-  const offersTemplate = createOffersTemplate(availableOffers, offers);
+  const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
 
   return `<li class="trip-events__item">
@@ -159,7 +168,7 @@ const createEventEditTemplate = (event) => {
       </header>
       <section class="event__details">
 
-        ${ availableOffers.length ? offersTemplate : ''}
+        ${offersTemplate}
 
         ${description || pictures.length ? destinationTemplate : ''}
       </section>
@@ -170,13 +179,13 @@ const createEventEditTemplate = (event) => {
 export default class EditEvent extends AbstractView {
   constructor(event = BLANK_EVENT) {
     super();
-    this._event = event;
+    this._data = EditEvent.parseEventToData(event);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._data);
   }
 
   _editClickHandler(evt) {
@@ -191,13 +200,30 @@ export default class EditEvent extends AbstractView {
 
   _saveClickHandler(evt) {
     evt.preventDefault();
-    this._callback.saveClick(this._event);
+    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
   }
 
   setSaveClickHandler(callback) {
     this._callback.saveClick = callback;
     this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
   }
+
+  static parseEventToData(event) {
+    return Object.assign(
+      {},
+      event,
+      {
+        hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
+      },
+    );
+  }
+
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+    delete data.hasAvailableOffers;
+    return data;
+  }
+
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
