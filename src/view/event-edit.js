@@ -39,12 +39,11 @@ const createDestinationSelectTemplate = (name) => (
   </datalist>`
 );
 
-// Проблемы нейминга
-const createOffersTemplate = (data, currentOffers) => (
+const createOffersTemplate = (availableOffers, currentOffers) => (
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-    ${data.map((it) => {
+    ${availableOffers.map((availableOffer) => {
     const id = makeId(6);
 
     return (
@@ -54,15 +53,15 @@ const createOffersTemplate = (data, currentOffers) => (
           id="event-offer-${id}-1"
           type="checkbox"
           name="event-offer-${id}"
-          ${currentOffers.some((element) => element.title === it.title) ? 'checked' : ''}
+          ${currentOffers.some((currentOffer) => currentOffer.title === availableOffer.title) ? 'checked' : ''}
         >
         <label
           class="event__offer-label"
           for="event-offer-${id}-1"
         >
-          <span class="event__offer-title">${it.title}</span>
+          <span class="event__offer-title">${availableOffer.title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${it.price}</span>
+          <span class="event__offer-price">${availableOffer.price}</span>
         </label>
       </div>`
     );
