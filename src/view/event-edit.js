@@ -184,6 +184,7 @@ export default class EditEvent extends AbstractView {
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -268,9 +269,12 @@ export default class EditEvent extends AbstractView {
         .querySelector('.event__available-offers')
         .addEventListener('change',this._offersChangeHandler);
     }
+
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('input', this._priceInputHandler);
   }
 
-  // Данные меняются при каждом клике по чекбоксу, а следовало бы только при сейве
   _offersChangeHandler(evt) {
     const checkedOffersElements = this.getElement()
       .querySelector('.event__available-offers')
@@ -286,6 +290,13 @@ export default class EditEvent extends AbstractView {
     evt.preventDefault();
     this.updateData({
       offers: checkedOffers,
+    }, true);
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value,
     }, true);
   }
 }
