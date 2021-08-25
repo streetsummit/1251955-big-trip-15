@@ -74,7 +74,9 @@ const getMockOffers = () => TYPES.map((type) => ({
   offers: getRandomLengthArray(OPTIONS, 0, MAX_OPTIONS_COUNT),
 }));
 
-const getAvailableOffers = (eventType) => (getMockOffers().find((el) => el.type === eventType)).offers;
+const mockOffers = getMockOffers();
+
+const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
 
 const getMockEvent = () => {
   const dateFrom = getDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
