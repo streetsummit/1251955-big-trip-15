@@ -234,5 +234,22 @@ export default class EditEvent extends AbstractView {
     parent.replaceChild(newElement, prevElement);
   }
 
+  updateData(update, justDataUpdating) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+      {},
+      this._data,
+      update,
+    );
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    this.updateElement();
+  }
   }
 }
