@@ -242,7 +242,7 @@ export default class EditEvent extends AbstractView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.setSaveClickHandler();
+    this.setSaveClickHandler(this._callback.saveClick);
   }
 
   _setInnerHandlers() {
