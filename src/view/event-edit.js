@@ -39,7 +39,6 @@ const createDestinationSelectTemplate = (name) => (
   </datalist>`
 );
 
-
 const createOffersListTemplate = (availableOffers, currentOffers) => {
   let template = '';
 
@@ -193,6 +192,7 @@ export default class EditEvent extends AbstractView {
     this._saveClickHandler = this._saveClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -246,6 +246,10 @@ export default class EditEvent extends AbstractView {
   }
 
   _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-list')
+      .addEventListener('change',this._typeChangeHandler);
+
     if (this._data.hasAvailableOffers) {
       this.getElement()
         .querySelector('.event__available-offers')
@@ -263,9 +267,10 @@ export default class EditEvent extends AbstractView {
       .querySelectorAll('input[type=checkbox]:checked');
 
     const checkedOffers = [];
+    const availableOffers = getAvailableOffers(this._data.type);
     checkedOffersElements.forEach((element) => {
       const offerTitle = element.dataset.title;
-      const checkedOffer = getAvailableOffers(this._data.type).find((el) => el.title === offerTitle);
+      const checkedOffer = availableOffers.find((el) => el.title === offerTitle);
       checkedOffers.push(checkedOffer);
     });
 
@@ -282,6 +287,14 @@ export default class EditEvent extends AbstractView {
     }, true);
   }
 
+  _typeChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value,
+      hasAvailableOffers: Boolean(getAvailableOffers(evt.target.value).length),
+      offers: [],
+    });
+  }
 
   static parseEventToData(event) {
     return Object.assign(
