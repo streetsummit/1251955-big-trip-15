@@ -64,10 +64,12 @@ const getMockDestinations = () => CITIES.map((name) => ({
   description: getRandomLengthArray(SENTENCES, 0, MAX_DESCRIPTION_LENGTH).join(' '),
   name,
   pictures: new Array(getRandomInteger(0, MAX_PICTURES_COUNT)).fill(null).map(() => ({
-    src: `http://picsum.photos/300/200?r=${Math.random()}`,
+    src: `https://www.fillmurray.com/300/${getRandomInteger(110, 200)}`,
     description: getRandomArrayElement(SENTENCES),
   })),
 }));
+
+const mockDestinations = getMockDestinations();
 
 const getMockOffers = () => TYPES.map((type) => ({
   type,
@@ -82,7 +84,7 @@ const getMockEvent = () => {
   const dateFrom = getDate(dayjs(), getRandomInteger(-MAX_MINUTES_GAP, MAX_MINUTES_GAP));
   const dateTo = getDate(dateFrom, getRandomInteger(MIN_EVENT_DURATION, MAX_MINUTES_GAP));
   const type = getRandomArrayElement(TYPES);
-  const destination = getRandomArrayElement(getMockDestinations());
+  const destination = getRandomArrayElement(mockDestinations);
   const offers = getRandomLengthArray(getAvailableOffers(type));
 
   return {
