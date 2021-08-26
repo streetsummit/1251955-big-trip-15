@@ -75,8 +75,9 @@ const createOffersTemplate = (availableOffers, currentOffers, hasAvailableOffers
         ${createOffersListTemplate(availableOffers, currentOffers)}
       </div>
     </section>`;
-  } else {
-    return '';
+  }
+  return '';
+};
   }
 };
 
