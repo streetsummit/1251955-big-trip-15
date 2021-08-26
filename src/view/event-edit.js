@@ -201,58 +201,6 @@ export default class EditEvent extends AbstractView {
     return createEventEditTemplate(this._data);
   }
 
-  _editClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.editClick();
-  }
-
-  setEditClickHandler(callback) {
-    this._callback.editClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
-  }
-
-  _saveClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
-  }
-
-  setSaveClickHandler(callback) {
-    this._callback.saveClick = callback;
-    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
-  }
-
-  static parseEventToData(event) {
-    return Object.assign(
-      {},
-      event,
-      {
-        hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
-      },
-    );
-  }
-
-  static parseDataToEvent(data) {
-    data = Object.assign({}, data);
-    delete data.hasAvailableOffers;
-    return data;
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    this.restoreHandlers();
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setSaveClickHandler();
-  }
-
   updateData(update, justDataUpdating) {
     if (!update) {
       return;
@@ -269,6 +217,32 @@ export default class EditEvent extends AbstractView {
     }
 
     this.updateElement();
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+    this.restoreHandlers();
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveClickHandler();
   }
 
   _setInnerHandlers() {
@@ -306,5 +280,32 @@ export default class EditEvent extends AbstractView {
     this.updateData({
       price: evt.target.value,
     }, true);
+  }
+
+
+  static parseEventToData(event) {
+    return Object.assign(
+      {},
+      event,
+      {
+        hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
+      },
+    );
+  }
+
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+    delete data.hasAvailableOffers;
+    return data;
+  }
+
+  _saveClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
+  }
+
+  setSaveClickHandler(callback) {
+    this._callback.saveClick = callback;
+    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
   }
 }
