@@ -82,7 +82,8 @@ const photosTemplate = (photos) => {
   if (photos.length) {
     return `<div class="event__photos-container">
       <div class="event__photos-tape">
-      ${photos.map((photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)).join('\n')}
+        ${photos.map((photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)).join('\n')}
+      </div>
     </div>`;
   }
   return '';
@@ -91,15 +92,11 @@ const photosTemplate = (photos) => {
 const createDestinationTemplate = (currentDestination) => {
   const { pictures, description } = currentDestination;
   if (description || pictures.length ) {
-    return (
-      `<section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
-
-        ${photosTemplate(pictures)}
-      </div>
-    </section>`
-    );
+    return `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+      ${photosTemplate(pictures)}
+    </section>`;
   }
   return '';
 };
