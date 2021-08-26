@@ -78,23 +78,31 @@ const createOffersTemplate = (availableOffers, currentOffers, hasAvailableOffers
   }
   return '';
 };
+
+const photosTemplate = (photos) => {
+  if (photos.length) {
+    return `<div class="event__photos-container">
+      <div class="event__photos-tape">
+      ${photos.map((photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)).join('\n')}
+    </div>`;
   }
+  return '';
 };
 
 const createDestinationTemplate = (currentDestination) => {
-  const {pictures = []} = currentDestination;
-  return (
-    `<section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${currentDestination.description}</p>
+  const { pictures, description } = currentDestination;
+  if (description || pictures.length ) {
+    return (
+      `<section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${description}</p>
 
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-        ${pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)).join('\n')}
+        ${photosTemplate(pictures)}
       </div>
-    </div>
-  </section>`
-  );
+    </section>`
+    );
+  }
+  return '';
 };
 
 const BLANK_EVENT = {
@@ -112,10 +120,9 @@ const BLANK_EVENT = {
 
 const createEventEditTemplate = (data) => {
   const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers } = data;
-  const { description, name, pictures } = destination;
 
   const typesTemplate = createEventEditTypesTemplate(type);
-  const destinationSelectTemplate = createDestinationSelectTemplate(name);
+  const destinationSelectTemplate = createDestinationSelectTemplate(destination.name);
   const availableOffers = getAvailableOffers(type);
   const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
@@ -172,7 +179,7 @@ const createEventEditTemplate = (data) => {
 
         ${offersTemplate}
 
-        ${description || pictures.length ? destinationTemplate : ''}
+        ${destinationTemplate}
       </section>
     </form>
   </li>`;
