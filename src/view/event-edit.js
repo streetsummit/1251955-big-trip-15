@@ -3,7 +3,7 @@ import { makeId } from '../utils/common.js';
 
 import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
 
-import SmartView from './smart';
+import SmartView from './smart.js';
 
 import dayjs from 'dayjs';
 
@@ -197,6 +197,12 @@ export default class EditEvent extends SmartView {
 
   getTemplate() {
     return createEventEditTemplate(this._data);
+  }
+
+  reset(event) {
+    this.updateData(
+      EditEvent.parseEventToData(event),
+    );
   }
 
   _editClickHandler(evt) {
