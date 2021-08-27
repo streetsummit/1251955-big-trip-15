@@ -1,7 +1,7 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
 
-import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
 
 import AbstractView from './abstract.js';
 
@@ -33,7 +33,7 @@ const createDestinationSelectTemplate = (name) => (
     list="destination-list-1"
   >
   <datalist id="destination-list-1">
-    ${getMockDestinations().map((element) => (`
+    ${mockDestinations.map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
   </datalist>`
@@ -190,6 +190,7 @@ export default class EditEvent extends AbstractView {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -256,6 +257,10 @@ export default class EditEvent extends AbstractView {
     this.getElement()
       .querySelector('.event__input--price')
       .addEventListener('input', this._priceInputHandler);
+
+    this.getElement()
+      .querySelector('#event-destination-1')
+      .addEventListener('change', this._destinationChangeHandler);
   }
 
   _offersChangeHandler(evt) {
@@ -290,6 +295,13 @@ export default class EditEvent extends AbstractView {
       type: evt.target.value,
       hasAvailableOffers: Boolean(getAvailableOffers(evt.target.value).length),
       offers: [],
+    });
+  }
+
+  _destinationChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: mockDestinations.find((el) => el.name === evt.target.value),
     });
   }
 

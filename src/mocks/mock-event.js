@@ -103,4 +103,6 @@ const getMockEvents = () => new Array(EVENTS_COUNT)
   .fill(null)
   .map(getMockEvent);
 
-export { getMockEvents, getMockDestinations, getAvailableOffers };
+const mockEvents = getMockEvents();
+
+export { mockEvents, mockDestinations, getAvailableOffers };
