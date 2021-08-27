@@ -3,7 +3,7 @@ import { makeId } from '../utils/common.js';
 
 import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
 
-import AbstractView from './abstract.js';
+import SmartView from './smart';
 
 import dayjs from 'dayjs';
 
@@ -181,7 +181,7 @@ const createEventEditTemplate = (data) => {
   </li>`;
 };
 
-export default class EditEvent extends AbstractView {
+export default class EditEvent extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
     this._data = EditEvent.parseEventToData(event);
@@ -197,35 +197,6 @@ export default class EditEvent extends AbstractView {
 
   getTemplate() {
     return createEventEditTemplate(this._data);
-  }
-
-  updateData(update, justDataUpdating) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-    );
-
-    if (justDataUpdating) {
-      return;
-    }
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    this.restoreHandlers();
   }
 
   _editClickHandler(evt) {
