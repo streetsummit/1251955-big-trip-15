@@ -71,6 +71,7 @@ export default class Event {
   _escKeyDownHandler(evt) {
     if (isEscEvent(evt)) {
       evt.preventDefault();
+      this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
     }
   }
@@ -93,6 +94,7 @@ export default class Event {
   }
 
   _handleHideFormButtonClick() {
+    this._editEventComponent.reset(this._event);
     this._replaceFormToCard();
   }
 

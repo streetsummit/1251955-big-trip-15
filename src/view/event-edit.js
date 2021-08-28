@@ -1,9 +1,9 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
 
-import { getMockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
 
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 import dayjs from 'dayjs';
 
@@ -33,58 +33,72 @@ const createDestinationSelectTemplate = (name) => (
     list="destination-list-1"
   >
   <datalist id="destination-list-1">
-    ${getMockDestinations().map((element) => (`
+    ${mockDestinations.map((element) => (`
       <option value="${element.name}"></option>
     `)).join('\n')}
   </datalist>`
 );
 
-// Проблемы нейминга
-const createOffersTemplate = (data, currentOffers) => (
-  `<section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">
-    ${data.map((it) => {
-    const id = makeId(6);
+const createOffersListTemplate = (availableOffers, currentOffers) => {
+  let template = '';
 
-    return (
-      `<div class="event__offer-selector">
+  availableOffers.forEach((availableOffer) => {
+    const id = makeId(6);
+    template += `<div class="event__offer-selector">
         <input
           class="event__offer-checkbox  visually-hidden"
           id="event-offer-${id}-1"
           type="checkbox"
           name="event-offer-${id}"
-          ${currentOffers.some((element) => element.title === it.title) ? 'checked' : ''}
+          data-title="${availableOffer.title}"
+          ${currentOffers.some((currentOffer) => currentOffer.title === availableOffer.title) ? 'checked' : ''}
         >
         <label
           class="event__offer-label"
           for="event-offer-${id}-1"
         >
-          <span class="event__offer-title">${it.title}</span>
+          <span class="event__offer-title">${availableOffer.title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${it.price}</span>
+          <span class="event__offer-price">${availableOffer.price}</span>
         </label>
-      </div>`
-    );
-  }).join('\n')}
-    </div>
-  </section>`
-);
+      </div>`;
+  });
+  return template;
+};
+
+const createOffersTemplate = (availableOffers, currentOffers, hasAvailableOffers) => {
+  if (hasAvailableOffers) {
+    return `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createOffersListTemplate(availableOffers, currentOffers)}
+      </div>
+    </section>`;
+  }
+  return '';
+};
+
+const photosTemplate = (photos) => {
+  if (photos.length) {
+    return `<div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${photos.map((photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)).join('\n')}
+      </div>
+    </div>`;
+  }
+  return '';
+};
 
 const createDestinationTemplate = (currentDestination) => {
-  const {pictures = []} = currentDestination;
-  return (
-    `<section class="event__section  event__section--destination">
+  const { pictures, description } = currentDestination;
+  if (description || pictures.length ) {
+    return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${currentDestination.description}</p>
-
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-        ${pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)).join('\n')}
-      </div>
-    </div>
-  </section>`
-  );
+      <p class="event__destination-description">${description}</p>
+      ${photosTemplate(pictures)}
+    </section>`;
+  }
+  return '';
 };
 
 const BLANK_EVENT = {
@@ -100,14 +114,13 @@ const BLANK_EVENT = {
   offers: [],
 };
 
-const createEventEditTemplate = (event) => {
-  const { dateFrom, dateTo, type, destination, price, offers } = event;
-  const { description, name, pictures } = destination;
+const createEventEditTemplate = (data) => {
+  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers } = data;
 
   const typesTemplate = createEventEditTypesTemplate(type);
-  const destinationSelectTemplate = createDestinationSelectTemplate(name);
+  const destinationSelectTemplate = createDestinationSelectTemplate(destination.name);
   const availableOffers = getAvailableOffers(type);
-  const offersTemplate = createOffersTemplate(availableOffers, offers);
+  const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
 
   return `<li class="trip-events__item">
@@ -155,29 +168,41 @@ const createEventEditTemplate = (event) => {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
         <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
+          <span class="visually-hidden">Close event</span>
         </button>
       </header>
       <section class="event__details">
 
-        ${ availableOffers.length ? offersTemplate : ''}
+        ${offersTemplate}
 
-        ${description || pictures.length ? destinationTemplate : ''}
+        ${destinationTemplate}
       </section>
     </form>
   </li>`;
 };
 
-export default class EditEvent extends AbstractView {
+export default class EditEvent extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
-    this._event = event;
+    this._data = EditEvent.parseEventToData(event);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._data);
+  }
+
+  reset(event) {
+    this.updateData(
+      EditEvent.parseEventToData(event),
+    );
   }
 
   _editClickHandler(evt) {
@@ -190,9 +215,93 @@ export default class EditEvent extends AbstractView {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveClickHandler(this._callback.saveClick);
+    this.setEditClickHandler(this._callback.editClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-list')
+      .addEventListener('change',this._typeChangeHandler);
+
+    if (this._data.hasAvailableOffers) {
+      this.getElement()
+        .querySelector('.event__available-offers')
+        .addEventListener('change',this._offersChangeHandler);
+    }
+
+    this.getElement()
+      .querySelector('.event__input--price')
+      .addEventListener('input', this._priceInputHandler);
+
+    this.getElement()
+      .querySelector('#event-destination-1')
+      .addEventListener('change', this._destinationChangeHandler);
+  }
+
+  _offersChangeHandler(evt) {
+    const checkedOffersElements = this.getElement()
+      .querySelector('.event__available-offers')
+      .querySelectorAll('input[type=checkbox]:checked');
+
+    const checkedOffers = [];
+    const availableOffers = getAvailableOffers(this._data.type);
+    checkedOffersElements.forEach((element) => {
+      const offerTitle = element.dataset.title;
+      const checkedOffer = availableOffers.find((el) => el.title === offerTitle);
+      checkedOffers.push(checkedOffer);
+    });
+
+    evt.preventDefault();
+    this.updateData({
+      offers: checkedOffers,
+    }, true);
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value,
+    }, true);
+  }
+
+  _typeChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value,
+      hasAvailableOffers: Boolean(getAvailableOffers(evt.target.value).length),
+      offers: [],
+    });
+  }
+
+  _destinationChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: mockDestinations.find((el) => el.name === evt.target.value),
+    });
+  }
+
+  static parseEventToData(event) {
+    return Object.assign(
+      {},
+      event,
+      {
+        hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
+      },
+    );
+  }
+
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+    delete data.hasAvailableOffers;
+    return data;
+  }
+
   _saveClickHandler(evt) {
     evt.preventDefault();
-    this._callback.saveClick(this._event);
+    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
   }
 
   setSaveClickHandler(callback) {
