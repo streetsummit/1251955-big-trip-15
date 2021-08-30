@@ -9,9 +9,10 @@ import { sortByDate, sortByPrice, sortByDuration } from '../utils/task-utils.js'
 import { SortType } from '../utils/constants.js';
 
 export default class EventBoard {
-  constructor(boardContainer, infoContainer) {
+  constructor(boardContainer, infoContainer, eventsModel) {
     this._boardContainer = boardContainer;
     this._infoContainer = infoContainer;
+    this._eventsModel = eventsModel;
     this._noEventComponent = new NoEventView();
     this._infoComponent = new InfoView();
     this._sortComponent = new SortView();
@@ -27,6 +28,10 @@ export default class EventBoard {
   init(events) {
     this._events = events.slice();
     this._renderEventBoard();
+  }
+
+  _getEvents() {
+    return this._eventsModel.getEvents();
   }
 
   _handleEventChange(updatedEvent) {
