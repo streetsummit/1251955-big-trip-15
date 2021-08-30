@@ -4,7 +4,6 @@ import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
 import { render, RenderPosition } from '../utils/render.js';
-import { updateItem } from '../utils/common.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/task-utils.js';
 import { SortType } from '../utils/constants.js';
 
@@ -25,17 +24,24 @@ export default class EventBoard {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(events) {
-    this._events = events.slice();
+  init() {
     this._renderEventBoard();
   }
 
   _getEvents() {
+    switch (this._currentSortType) {
+      case SortType.DAY:
+        return this._eventsModel.getEvents().slice().sort(sortByDate);
+      case SortType.TIME:
+        return this._eventsModel.getEvents().slice().sort(sortByDuration);
+      case SortType.PRICE:
+        return this._eventsModel.getEvents().slice().sort(sortByPrice);
+    }
     return this._eventsModel.getEvents();
   }
 
   _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
+    // здесь будем вызывать обновление модели
     this._eventPresenter.get(updatedEvent.id).init(updatedEvent);
   }
 
@@ -43,30 +49,14 @@ export default class EventBoard {
     this._eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  _sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.DAY:
-        this._events.sort(sortByDate);
-        break;
-      case SortType.TIME:
-        this._events.sort(sortByDuration);
-        break;
-      case SortType.PRICE:
-        this._events.sort(sortByPrice);
-        break;
-    }
-
-    this._currentSortType = sortType;
-  }
-
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }
-    this._sortEvents(sortType);
+    this._currentSortType = sortType;
     this._clearEventList();
     this._renderEventList();
-    this._renderEvents();
+    this._renderEvents(this._getEvents());
   }
 
   _renderNoEvents() {
@@ -88,11 +78,8 @@ export default class EventBoard {
     this._eventPresenter.set(event.id, eventPresenter);
   }
 
-  _renderEvents() {
-    this._sortEvents(this._currentSortType);
-    this._events
-      .slice()
-      .forEach((el) => this._renderEvent(el));
+  _renderEvents(events) {
+    events.forEach((event) => this._renderEvent(event));
   }
 
   _clearEventList() {
@@ -105,13 +92,13 @@ export default class EventBoard {
   }
 
   _renderEventBoard() {
-    if (!this._events.length) {
+    if (!this._getEvents().length) {
       this._renderNoEvents();
       return;
     }
     this._renderInfo();
     this._renderSort();
     this._renderEventList();
-    this._renderEvents();
+    this._renderEvents(this._getEvents());
   }
 }

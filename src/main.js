@@ -20,4 +20,4 @@ const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContain
 render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 render(filtersContainer, new FilterView(), RenderPosition.BEFOREEND);
 
-eventBoardPresenter.init(mockEvents);
+eventBoardPresenter.init();
