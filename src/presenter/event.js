@@ -2,6 +2,7 @@ import EventView from '../view/event.js';
 import EditEventView from '../view/event-edit.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
+import { UserAction, UpdateType } from '../utils/constants.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -100,6 +101,8 @@ export default class Event {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._event,
@@ -111,7 +114,11 @@ export default class Event {
   }
 
   _handleSaveClick(event) {
-    this._changeData(event);
+    this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
     this._replaceFormToCard();
   }
 }
