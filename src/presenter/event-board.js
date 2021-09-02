@@ -5,7 +5,7 @@ import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
 import { render, RenderPosition } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/task-utils.js';
-import { SortType } from '../utils/constants.js';
+import { SortType, UpdateType, UserAction } from '../utils/constants.js';
 
 export default class EventBoard {
   constructor(boardContainer, infoContainer, eventsModel) {
@@ -43,19 +43,32 @@ export default class EventBoard {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    console.log(actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
   }
 
   _handleModelEvent(updateType, data) {
-    console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, при добавлении в избранное)
+        this._eventPresenter.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (при изменении данных, влияющих на маршрут в шапке (все?))
+        break;
+    }
   }
 
   _handleModeChange() {
