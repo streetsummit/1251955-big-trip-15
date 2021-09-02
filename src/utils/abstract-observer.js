@@ -1,6 +1,6 @@
 export default class AbstractObserver {
   constructor() {
-    this._observer = new Set();
+    this._observers = new Set();
   }
 
   addObserver(observer) {
