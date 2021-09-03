@@ -86,7 +86,6 @@ export default class EventBoard {
     this._currentSortType = sortType;
     this._clearEventList();
     this._renderEventList();
-    this._renderEvents(this._getEvents());
   }
 
   _renderNoEvents() {
@@ -108,10 +107,6 @@ export default class EventBoard {
     this._eventPresenter.set(event.id, eventPresenter);
   }
 
-  _renderEvents(events) {
-    events.forEach((event) => this._renderEvent(event));
-  }
-
   _clearEventList() {
     this._eventPresenter.forEach((presenter) => presenter.destroy());
     this._eventPresenter.clear();
@@ -119,6 +114,7 @@ export default class EventBoard {
 
   _renderEventList() {
     render(this._boardContainer, this._eventListComponent, RenderPosition.BEFOREEND);
+    this._getEvents().forEach((event) => this._renderEvent(event));
   }
 
   _clearEventBoard(resetSortType = false) {
@@ -140,6 +136,5 @@ export default class EventBoard {
     this._renderInfo();
     this._renderSort();
     this._renderEventList();
-    this._renderEvents(this._getEvents());
   }
 }
