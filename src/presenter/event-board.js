@@ -3,7 +3,7 @@ import SortView from '../view/trip-sort.js';
 import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
-import { render, RenderPosition } from '../utils/render.js';
+import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/task-utils.js';
 import { SortType, UpdateType, UserAction } from '../utils/constants.js';
 
@@ -47,10 +47,10 @@ export default class EventBoard {
       case UserAction.UPDATE_EVENT:
         this._eventsModel.updateEvent(updateType, update);
         break;
-      case UserAction.ADD_TASK:
+      case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_EVENT:
         this._eventsModel.deleteEvent(updateType, update);
         break;
     }
@@ -63,10 +63,14 @@ export default class EventBoard {
         this._eventPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список
+        this._clearEventBoard();
+        this._renderEventBoard();
+        // - обновить список (при изменении данных)
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (при изменении данных, влияющих на маршрут в шапке (все?))
+        this._clearEventBoard(true);
+        this._renderEventBoard();
+        // - обновить всю доску (при переключении фильтра)
         break;
     }
   }
@@ -115,6 +119,17 @@ export default class EventBoard {
 
   _renderEventList() {
     render(this._boardContainer, this._eventListComponent, RenderPosition.BEFOREEND);
+  }
+
+  _clearEventBoard(resetSortType = false) {
+    this._eventPresenter.forEach((presenter) => presenter.destroy());
+    this._eventPresenter.clear();
+    remove(this._sortComponent);
+    remove(this._noEventComponent);
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DAY;
+    }
   }
 
   _renderEventBoard() {
