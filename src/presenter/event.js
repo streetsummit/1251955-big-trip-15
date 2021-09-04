@@ -116,7 +116,7 @@ export default class Event {
   _handleSaveClick(event) {
     this._changeData(
       UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       event,
     );
     this._replaceFormToCard();

@@ -14,7 +14,7 @@ export default class EventBoard {
     this._eventsModel = eventsModel;
     this._noEventComponent = new NoEventView();
     this._infoComponent = new InfoView();
-    this._sortComponent = new SortView();
+    this._sortComponent = null;
     this._eventListComponent = new EventListView();
     this._eventPresenter = new Map();
     this._currentSortType = SortType.DAY;
@@ -59,18 +59,18 @@ export default class EventBoard {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, при добавлении в избранное)
+        // - обновить часть списка (при добавлении точки в избранное)
         this._eventPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this._clearEventBoard();
+        this._clearEventBoard({resetSortType: true});
         this._renderEventBoard();
-        // - обновить список (при изменении данных)
+        // - обновить список без изменения инфо, сбросить сортировку (при филльтрации)
         break;
       case UpdateType.MAJOR:
-        this._clearEventBoard(true);
+        this._clearEventBoard({resetInfo: true});
         this._renderEventBoard();
-        // - обновить всю доску (при переключении фильтра)
+        // - обновить список и инфо, не сбрасывать сортировку (при добавлении/удалении/изменении)
         break;
     }
   }
@@ -84,8 +84,8 @@ export default class EventBoard {
       return;
     }
     this._currentSortType = sortType;
-    this._clearEventList();
-    this._renderEventList();
+    this._clearEventBoard();
+    this._renderEventBoard();
   }
 
   _renderNoEvents() {
@@ -97,8 +97,12 @@ export default class EventBoard {
   }
 
   _renderSort() {
-    render(this._boardContainer, this._sortComponent, RenderPosition.BEFOREEND);
+    if (this._sortComponent === null) {
+      this._sortComponent = new SortView();
+    }
+
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    render(this._boardContainer, this._sortComponent, RenderPosition.BEFOREEND);
   }
 
   _renderEvent(event) {
@@ -107,25 +111,9 @@ export default class EventBoard {
     this._eventPresenter.set(event.id, eventPresenter);
   }
 
-  _clearEventList() {
-    this._eventPresenter.forEach((presenter) => presenter.destroy());
-    this._eventPresenter.clear();
-  }
-
   _renderEventList() {
     render(this._boardContainer, this._eventListComponent, RenderPosition.BEFOREEND);
     this._getEvents().forEach((event) => this._renderEvent(event));
-  }
-
-  _clearEventBoard(resetSortType = false) {
-    this._eventPresenter.forEach((presenter) => presenter.destroy());
-    this._eventPresenter.clear();
-    remove(this._sortComponent);
-    remove(this._noEventComponent);
-
-    if (resetSortType) {
-      this._currentSortType = SortType.DAY;
-    }
   }
 
   _renderEventBoard() {
@@ -136,5 +124,22 @@ export default class EventBoard {
     this._renderInfo();
     this._renderSort();
     this._renderEventList();
+  }
+
+  _clearEventBoard({resetSortType = false, resetInfo = false} = {}) {
+    this._eventPresenter.forEach((presenter) => presenter.destroy());
+    this._eventPresenter.clear();
+
+    if (resetSortType) {
+      remove(this._sortComponent);
+      this._currentSortType = SortType.DAY;
+    }
+    remove(this._noEventComponent);
+
+    if (resetInfo) {
+      remove(this._infoComponent);
+    }
+
+
   }
 }
