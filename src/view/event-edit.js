@@ -187,6 +187,7 @@ export default class EditEvent extends SmartView {
     this._data = EditEvent.parseEventToData(event);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
@@ -219,6 +220,7 @@ export default class EditEvent extends SmartView {
     this._setInnerHandlers();
     this.setSaveClickHandler(this._callback.saveClick);
     this.setEditClickHandler(this._callback.editClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -307,5 +309,15 @@ export default class EditEvent extends SmartView {
   setSaveClickHandler(callback) {
     this._callback.saveClick = callback;
     this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditEvent.parseDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 }
