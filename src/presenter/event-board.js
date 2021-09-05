@@ -4,7 +4,7 @@ import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
-import { sortByDate, sortByPrice, sortByDuration } from '../utils/task-utils.js';
+import { sortByDate, sortByPrice, sortByDuration } from '../utils/event-utils.js';
 import { SortType, UpdateType, UserAction } from '../utils/constants.js';
 
 export default class EventBoard {

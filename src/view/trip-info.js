@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { getTripPrice } from '../utils/task-utils.js';
+import { getTripPrice } from '../utils/event-utils.js';
 
 const createTripInfoTemplate = (events) => (
   `<section class="trip-main__trip-info  trip-info">
