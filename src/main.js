@@ -6,6 +6,13 @@ import EventBoardPresenter from './presenter/event-board.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
 
+const filters = [
+  {
+    type: 'everything',
+    name: 'EVERYTHING',
+  },
+];
+
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
 
@@ -21,6 +28,6 @@ const eventsContainer = siteMainElement.querySelector('.trip-events');
 const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel);
 
 render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
-render(filtersContainer, new FilterView(), RenderPosition.BEFOREEND);
+render(filtersContainer, new FilterView(filters, 'all'), RenderPosition.BEFOREEND);
 
 eventBoardPresenter.init();

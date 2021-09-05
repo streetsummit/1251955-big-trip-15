@@ -9,3 +9,13 @@ export const sortByDuration = (eventA, eventB) => (dayjs(eventB.dateTo) - dayjs(
 export const getFullEventPrice = (event) => event.offers.reduce((sum, current) => sum + current.price, event.price);
 
 export const getTripPrice = (events) => events.reduce(((sum, event) => sum + getFullEventPrice(event)), 0);
+
+export const isDatePast = (date) => {
+  const now = dayjs();
+  dayjs(date) - now < 0;
+};
+
+export const isDateFuture = (date) => {
+  const now = dayjs();
+  dayjs(date) - now >= 0;
+};
