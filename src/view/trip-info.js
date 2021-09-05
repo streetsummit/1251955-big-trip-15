@@ -1,6 +1,7 @@
 import AbstractView from './abstract.js';
+import { getTripPrice } from '../utils/task-utils.js';
 
-const createTripInfoTemplate = () => (
+const createTripInfoTemplate = (events) => (
   `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
@@ -9,13 +10,18 @@ const createTripInfoTemplate = () => (
     </div>
 
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${getTripPrice(events)}</span>
     </p>
   </section>`
 );
 
 export default class TripInfo extends AbstractView {
+  constructor(events) {
+    super();
+    this._events = events;
+  }
+
   getTemplate() {
-    return createTripInfoTemplate();
+    return createTripInfoTemplate(this._events);
   }
 }

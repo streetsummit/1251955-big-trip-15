@@ -13,7 +13,7 @@ export default class EventBoard {
     this._infoContainer = infoContainer;
     this._eventsModel = eventsModel;
     this._noEventComponent = new NoEventView();
-    this._infoComponent = new InfoView();
+    this._infoComponent = null;
     this._sortComponent = null;
     this._eventListComponent = new EventListView();
     this._eventPresenter = new Map();
@@ -93,6 +93,10 @@ export default class EventBoard {
   }
 
   _renderInfo() {
+    if (this._infoComponent === null) {
+      this._infoComponent = new InfoView(this._getEvents());
+    }
+
     render(this._infoContainer, this._infoComponent, RenderPosition.AFTERBEGIN);
   }
 
@@ -135,9 +139,9 @@ export default class EventBoard {
       this._currentSortType = SortType.DAY;
     }
     remove(this._noEventComponent);
-
     if (resetInfo) {
       remove(this._infoComponent);
+      this._infoComponent = null;
     }
 
 

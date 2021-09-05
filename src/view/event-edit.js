@@ -263,7 +263,7 @@ export default class EditEvent extends SmartView {
   _priceInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      price: evt.target.value,
+      price: Number(evt.target.value),
     }, true);
   }
 
