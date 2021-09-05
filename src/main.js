@@ -4,9 +4,12 @@ import MenuView from './view/menu.js';
 import FilterView from './view/filter.js';
 import EventBoardPresenter from './presenter/event-board.js';
 import EventsModel from './model/events-model.js';
+import FilterModel from './model/filter-model.js';
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
+
+const filterModel = new FilterModel();
 
 const siteHeaderContainer = document.querySelector('.page-header');
 const siteMainElement = document.querySelector('.page-main');

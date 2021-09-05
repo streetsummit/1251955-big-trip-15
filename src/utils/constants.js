@@ -1,6 +1,5 @@
 export const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-
 export const SortType = {
   DAY: 'day',
   EVENT: 'event',
@@ -19,4 +18,10 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+};
+
+export const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past',
 };
