@@ -134,11 +134,17 @@ export default class EventBoard {
     this._eventPresenter.forEach((presenter) => presenter.destroy());
     this._eventPresenter.clear();
 
+    if (!this._getEvents().length) {
+      resetSortType = true;
+    }
+
     if (resetSortType) {
       remove(this._sortComponent);
       this._currentSortType = SortType.DAY;
     }
+
     remove(this._noEventComponent);
+
     if (resetInfo) {
       remove(this._infoComponent);
       this._infoComponent = null;
