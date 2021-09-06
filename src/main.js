@@ -1,17 +1,10 @@
 import { mockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition } from './utils/render.js';
 import MenuView from './view/menu.js';
-import FilterView from './view/filter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 import EventBoardPresenter from './presenter/event-board.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
-
-const filters = [
-  {
-    type: 'everything',
-    name: 'EVERYTHING',
-  },
-];
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
@@ -28,6 +21,7 @@ const eventsContainer = siteMainElement.querySelector('.trip-events');
 const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel);
 
 render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
-render(filtersContainer, new FilterView(filters, 'all'), RenderPosition.BEFOREEND);
+const filterPresenter = new FilterPresenter(filtersContainer, filterModel, eventsModel);
 
+filterPresenter.init();
 eventBoardPresenter.init();
