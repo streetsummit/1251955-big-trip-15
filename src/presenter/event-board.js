@@ -3,6 +3,7 @@ import SortView from '../view/trip-sort.js';
 import EventListView from '../view/event-list.js';
 import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
+import EventNewPresenter from './event-new.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/event-utils.js';
 import { filter } from '../utils/filter-utils.js';
@@ -30,10 +31,18 @@ export default class EventBoard {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._eventListComponent, this._handleViewAction);
   }
 
   init() {
     this._renderEventBoard();
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.DAY;
+    this._filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
+    this._eventNewPresenter.init();
   }
 
   _getEvents() {
@@ -86,6 +95,7 @@ export default class EventBoard {
   }
 
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
     this._eventPresenter.forEach((presenter) => presenter.resetView());
   }
 
@@ -146,6 +156,7 @@ export default class EventBoard {
   }
 
   _clearEventBoard({resetSortType = false, resetInfo = false} = {}) {
+    this._eventNewPresenter.destroy();
     this._eventPresenter.forEach((presenter) => presenter.destroy());
     this._eventPresenter.clear();
 

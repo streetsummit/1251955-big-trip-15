@@ -25,3 +25,8 @@ const filterPresenter = new FilterPresenter(filtersContainer, filterModel, event
 
 filterPresenter.init();
 eventBoardPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  eventBoardPresenter.createEvent();
+});

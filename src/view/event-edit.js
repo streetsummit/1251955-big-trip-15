@@ -101,6 +101,12 @@ const createDestinationTemplate = (currentDestination) => {
   return '';
 };
 
+const createCloseButtonTemplate = () => (
+  `<button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Close event</span>
+  </button>`
+);
+
 const BLANK_EVENT = {
   dateFrom: '2019-03-19T00:00:00.000Z',
   dateTo: '2019-03-19T00:00:00.000Z',
@@ -115,13 +121,14 @@ const BLANK_EVENT = {
 };
 
 const createEventEditTemplate = (data) => {
-  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers } = data;
+  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers, isNewEvent } = data;
 
   const typesTemplate = createEventEditTypesTemplate(type);
   const destinationSelectTemplate = createDestinationSelectTemplate(destination.name);
   const availableOffers = getAvailableOffers(type);
   const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
+  const closeButtonTemplate = createCloseButtonTemplate();
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -136,7 +143,6 @@ const createEventEditTemplate = (data) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-
               ${typesTemplate}
             </fieldset>
           </div>
@@ -166,10 +172,8 @@ const createEventEditTemplate = (data) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Close event</span>
-        </button>
+        <button class="event__reset-btn" type="reset">${isNewEvent ? 'Cancel' : 'Delete'}</button>
+        ${isNewEvent ? '' : closeButtonTemplate}
       </header>
       <section class="event__details">
 
@@ -291,6 +295,7 @@ export default class EditEvent extends SmartView {
       event,
       {
         hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
+        isNewEvent: event === BLANK_EVENT,
       },
     );
   }
@@ -298,6 +303,7 @@ export default class EditEvent extends SmartView {
   static parseDataToEvent(data) {
     data = Object.assign({}, data);
     delete data.hasAvailableOffers;
+    delete data.isNewEvent;
     return data;
   }
 
