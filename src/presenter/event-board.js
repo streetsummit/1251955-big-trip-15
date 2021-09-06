@@ -6,7 +6,7 @@ import EventPresenter from './event.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/event-utils.js';
 import { filter } from '../utils/filter-utils.js';
-import { SortType, UpdateType, UserAction } from '../utils/constants.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../utils/constants.js';
 
 export default class EventBoard {
   constructor(boardContainer, infoContainer, eventsModel, filterModel) {
@@ -14,12 +14,15 @@ export default class EventBoard {
     this._infoContainer = infoContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
-    this._noEventComponent = new NoEventView();
+    this._eventPresenter = new Map();
+    this._filterType = FilterType.EVERYTHING;
+    this._currentSortType = SortType.DAY;
+
+    this._noEventComponent = null;
     this._infoComponent = null;
     this._sortComponent = null;
+
     this._eventListComponent = new EventListView();
-    this._eventPresenter = new Map();
-    this._currentSortType = SortType.DAY;
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -34,9 +37,9 @@ export default class EventBoard {
   }
 
   _getEvents() {
-    const filterType = this._filterModel.getFilter();
+    this._filterType = this._filterModel.getFilter();
     const events = this._eventsModel.getEvents();
-    const filtredEvents = filter[filterType](events);
+    const filtredEvents = filter[this._filterType](events);
 
     switch (this._currentSortType) {
       case SortType.DAY:
@@ -96,6 +99,7 @@ export default class EventBoard {
   }
 
   _renderNoEvents() {
+    this._noEventComponent = new NoEventView(this._filterType);
     render(this._boardContainer, this._noEventComponent, RenderPosition.BEFOREEND);
   }
 
@@ -128,11 +132,15 @@ export default class EventBoard {
   }
 
   _renderEventBoard() {
+    if (this._eventsModel.getEvents().length) {
+      this._renderInfo();
+    }
+
     if (!this._getEvents().length) {
       this._renderNoEvents();
       return;
     }
-    this._renderInfo();
+
     this._renderSort();
     this._renderEventList();
   }
@@ -150,13 +158,13 @@ export default class EventBoard {
       this._currentSortType = SortType.DAY;
     }
 
-    remove(this._noEventComponent);
+    if (this._noEventComponent) {
+      remove(this._noEventComponent);
+    }
 
     if (resetInfo) {
       remove(this._infoComponent);
       this._infoComponent = null;
     }
-
-
   }
 }
