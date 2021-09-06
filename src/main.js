@@ -18,7 +18,7 @@ const infoContainer = siteHeaderContainer.querySelector('.trip-main');
 const filtersContainer = siteHeaderContainer.querySelector('.trip-controls__filters');
 const eventsContainer = siteMainElement.querySelector('.trip-events');
 
-const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel);
+const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel, filterModel);
 
 render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 const filterPresenter = new FilterPresenter(filtersContainer, filterModel, eventsModel);

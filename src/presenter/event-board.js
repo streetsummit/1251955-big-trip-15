@@ -5,13 +5,15 @@ import NoEventView from '../view/no-event.js';
 import EventPresenter from './event.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/event-utils.js';
+import { filter } from '../utils/filter-utils.js';
 import { SortType, UpdateType, UserAction } from '../utils/constants.js';
 
 export default class EventBoard {
-  constructor(boardContainer, infoContainer, eventsModel) {
+  constructor(boardContainer, infoContainer, eventsModel, filterModel) {
     this._boardContainer = boardContainer;
     this._infoContainer = infoContainer;
     this._eventsModel = eventsModel;
+    this._filterModel = filterModel;
     this._noEventComponent = new NoEventView();
     this._infoComponent = null;
     this._sortComponent = null;
@@ -24,6 +26,7 @@ export default class EventBoard {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -31,15 +34,19 @@ export default class EventBoard {
   }
 
   _getEvents() {
+    const filterType = this._filterModel.getFilter();
+    const events = this._eventsModel.getEvents();
+    const filtredEvents = filter[filterType](events);
+
     switch (this._currentSortType) {
       case SortType.DAY:
-        return this._eventsModel.getEvents().slice().sort(sortByDate);
+        return filtredEvents.sort(sortByDate);
       case SortType.TIME:
-        return this._eventsModel.getEvents().slice().sort(sortByDuration);
+        return filtredEvents.sort(sortByDuration);
       case SortType.PRICE:
-        return this._eventsModel.getEvents().slice().sort(sortByPrice);
+        return filtredEvents.sort(sortByPrice);
     }
-    return this._eventsModel.getEvents();
+    return filtredEvents;
   }
 
   _handleViewAction(actionType, updateType, update) {
