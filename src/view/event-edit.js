@@ -1,11 +1,10 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
-
 import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
-
 import SmartView from './smart.js';
-
 import dayjs from 'dayjs';
+
+const availableDestinations = mockDestinations.map((element) => element.name);
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   <div class="event__type-item">
@@ -31,11 +30,10 @@ const createDestinationSelectTemplate = (name) => (
     name="event-destination"
     value="${name}"
     list="destination-list-1"
+    required
   >
   <datalist id="destination-list-1">
-    ${mockDestinations.map((element) => (`
-      <option value="${element.name}"></option>
-    `)).join('\n')}
+    ${mockDestinations.map((element) => `<option value="${element.name}"></option>`).join('\n')}
   </datalist>`
 );
 
@@ -168,7 +166,7 @@ const createEventEditTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" min="0" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -244,9 +242,18 @@ export default class EditEvent extends SmartView {
       .querySelector('.event__input--price')
       .addEventListener('input', this._priceInputHandler);
 
-    this.getElement()
-      .querySelector('#event-destination-1')
-      .addEventListener('change', this._destinationChangeHandler);
+    const destinationInputElement = this.getElement().querySelector('#event-destination-1');
+
+    destinationInputElement.addEventListener('change', (evt) => {
+      const isValidValue = availableDestinations.some((name) => name === evt.target.value);
+      if (!isValidValue) {
+        destinationInputElement.setCustomValidity('Select from list');
+      } else {
+        destinationInputElement.setCustomValidity('');
+        this._destinationChangeHandler(evt);
+      }
+      destinationInputElement.reportValidity();
+    });
   }
 
   _offersChangeHandler(evt) {
