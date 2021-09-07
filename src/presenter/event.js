@@ -69,6 +69,7 @@ export default class Event {
   destroy() {
     remove(this._eventComponent);
     remove(this._editEventComponent);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _escKeyDownHandler(evt) {
@@ -130,5 +131,6 @@ export default class Event {
       UpdateType.MAJOR,
       event,
     );
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 }
