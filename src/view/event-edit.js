@@ -116,7 +116,7 @@ const BLANK_EVENT = {
     name: '',
     pictures: [],
   },
-  price: '',
+  price: 0,
   offers: [],
 };
 
@@ -223,7 +223,9 @@ export default class EditEvent extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSaveClickHandler(this._callback.saveClick);
-    this.setEditClickHandler(this._callback.editClick);
+    if (!this._data.isNewEvent) {
+      this.setEditClickHandler(this._callback.editClick);
+    }
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
