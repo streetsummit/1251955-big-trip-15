@@ -1,10 +1,11 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
-import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
+import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
 import SmartView from './smart.js';
 import dayjs from 'dayjs';
 
 const availableDestinations = mockDestinations.map((element) => element.name);
+const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   <div class="event__type-item">
