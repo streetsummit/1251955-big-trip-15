@@ -2,6 +2,7 @@ import EventView from '../view/event.js';
 import EditEventView from '../view/event-edit.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
+import { UserAction, UpdateType } from '../utils/constants.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -24,6 +25,7 @@ export default class Event {
     this._handleShowFormButtonClick = this._handleShowFormButtonClick.bind(this);
     this._handleHideFormButtonClick = this._handleHideFormButtonClick.bind(this);
     this._handleSaveClick = this._handleSaveClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(event) {
@@ -39,6 +41,7 @@ export default class Event {
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
+    this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevEventComponent === null || prevEditEventComponent === null) {
       render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
@@ -66,6 +69,7 @@ export default class Event {
   destroy() {
     remove(this._eventComponent);
     remove(this._editEventComponent);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 
   _escKeyDownHandler(evt) {
@@ -100,6 +104,8 @@ export default class Event {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._event,
@@ -111,7 +117,20 @@ export default class Event {
   }
 
   _handleSaveClick(event) {
-    this._changeData(event);
+    this._changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MAJOR,
+      event,
+    );
     this._replaceFormToCard();
+  }
+
+  _handleDeleteClick(event) {
+    this._changeData(
+      UserAction.DELETE_EVENT,
+      UpdateType.MAJOR,
+      event,
+    );
+    document.removeEventListener('keydown', this._escKeyDownHandler);
   }
 }

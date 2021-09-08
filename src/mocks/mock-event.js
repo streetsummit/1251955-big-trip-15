@@ -105,4 +105,4 @@ const getMockEvents = () => new Array(EVENTS_COUNT)
 
 const mockEvents = getMockEvents();
 
-export { mockEvents, mockDestinations, getAvailableOffers };
+export { mockEvents, mockDestinations, mockOffers };

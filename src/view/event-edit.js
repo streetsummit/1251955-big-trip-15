@@ -1,11 +1,11 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
-
-import { mockDestinations, getAvailableOffers } from '../mocks/mock-event.js';
-
+import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
 import SmartView from './smart.js';
-
 import dayjs from 'dayjs';
+
+const availableDestinations = mockDestinations.map((element) => element.name);
+const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   <div class="event__type-item">
@@ -31,11 +31,10 @@ const createDestinationSelectTemplate = (name) => (
     name="event-destination"
     value="${name}"
     list="destination-list-1"
+    required
   >
   <datalist id="destination-list-1">
-    ${mockDestinations.map((element) => (`
-      <option value="${element.name}"></option>
-    `)).join('\n')}
+    ${mockDestinations.map((element) => `<option value="${element.name}"></option>`).join('\n')}
   </datalist>`
 );
 
@@ -101,6 +100,12 @@ const createDestinationTemplate = (currentDestination) => {
   return '';
 };
 
+const createCloseButtonTemplate = () => (
+  `<button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Close event</span>
+  </button>`
+);
+
 const BLANK_EVENT = {
   dateFrom: '2019-03-19T00:00:00.000Z',
   dateTo: '2019-03-19T00:00:00.000Z',
@@ -110,18 +115,19 @@ const BLANK_EVENT = {
     name: '',
     pictures: [],
   },
-  price: '',
+  price: 0,
   offers: [],
 };
 
 const createEventEditTemplate = (data) => {
-  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers } = data;
+  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers, isNewEvent } = data;
 
   const typesTemplate = createEventEditTypesTemplate(type);
   const destinationSelectTemplate = createDestinationSelectTemplate(destination.name);
   const availableOffers = getAvailableOffers(type);
   const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
+  const closeButtonTemplate = createCloseButtonTemplate();
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -136,7 +142,6 @@ const createEventEditTemplate = (data) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-
               ${typesTemplate}
             </fieldset>
           </div>
@@ -162,14 +167,12 @@ const createEventEditTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" min="0" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Close event</span>
-        </button>
+        <button class="event__reset-btn" type="reset">${isNewEvent ? 'Cancel' : 'Delete'}</button>
+        ${isNewEvent ? '' : closeButtonTemplate}
       </header>
       <section class="event__details">
 
@@ -187,6 +190,7 @@ export default class EditEvent extends SmartView {
     this._data = EditEvent.parseEventToData(event);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
@@ -218,7 +222,10 @@ export default class EditEvent extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setSaveClickHandler(this._callback.saveClick);
-    this.setEditClickHandler(this._callback.editClick);
+    if (!this._data.isNewEvent) {
+      this.setEditClickHandler(this._callback.editClick);
+    }
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -236,9 +243,18 @@ export default class EditEvent extends SmartView {
       .querySelector('.event__input--price')
       .addEventListener('input', this._priceInputHandler);
 
-    this.getElement()
-      .querySelector('#event-destination-1')
-      .addEventListener('change', this._destinationChangeHandler);
+    const destinationInputElement = this.getElement().querySelector('#event-destination-1');
+
+    destinationInputElement.addEventListener('change', (evt) => {
+      const isValidValue = availableDestinations.some((name) => name === evt.target.value);
+      if (!isValidValue) {
+        destinationInputElement.setCustomValidity('Select from list');
+      } else {
+        destinationInputElement.setCustomValidity('');
+        this._destinationChangeHandler(evt);
+      }
+      destinationInputElement.reportValidity();
+    });
   }
 
   _offersChangeHandler(evt) {
@@ -263,7 +279,7 @@ export default class EditEvent extends SmartView {
   _priceInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      price: evt.target.value,
+      price: Number(evt.target.value),
     }, true);
   }
 
@@ -289,6 +305,7 @@ export default class EditEvent extends SmartView {
       event,
       {
         hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
+        isNewEvent: event === BLANK_EVENT,
       },
     );
   }
@@ -296,6 +313,7 @@ export default class EditEvent extends SmartView {
   static parseDataToEvent(data) {
     data = Object.assign({}, data);
     delete data.hasAvailableOffers;
+    delete data.isNewEvent;
     return data;
   }
 
@@ -307,5 +325,15 @@ export default class EditEvent extends SmartView {
   setSaveClickHandler(callback) {
     this._callback.saveClick = callback;
     this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditEvent.parseDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 }
