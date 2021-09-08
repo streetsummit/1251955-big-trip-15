@@ -110,8 +110,8 @@ const createCloseButtonTemplate = () => (
 );
 
 const BLANK_EVENT = {
-  dateFrom: '2019-03-19T00:00:00.000Z',
-  dateTo: '2019-03-19T00:00:00.000Z',
+  dateFrom: new Date(),
+  dateTo: new Date(),
   type: 'flight',
   destination: {
     description: '',
@@ -191,13 +191,21 @@ export default class EditEvent extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
     this._data = EditEvent.parseEventToData(event);
+    this._startPicker = null;
+    this._endPicker = null;
+
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._saveClickHandler = this._saveClickHandler.bind(this);
-    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+
+    this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
+    this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
-    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._setStartPicker = this._setStartPicker.bind(this);
+    this._setEndPicker = this._setEndPicker.bind(this);
 
     this._setInnerHandlers();
   }
@@ -206,10 +214,14 @@ export default class EditEvent extends SmartView {
     return createEventEditTemplate(this._data);
   }
 
-  reset(event) {
-    this.updateData(
-      EditEvent.parseEventToData(event),
-    );
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditEvent.parseDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 
   _editClickHandler(evt) {
@@ -222,41 +234,68 @@ export default class EditEvent extends SmartView {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._editClickHandler);
   }
 
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setSaveClickHandler(this._callback.saveClick);
-    if (!this._data.isNewEvent) {
-      this.setEditClickHandler(this._callback.editClick);
-    }
-    this.setDeleteClickHandler(this._callback.deleteClick);
+  _saveClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
   }
 
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector('.event__type-list')
-      .addEventListener('change',this._typeChangeHandler);
+  setSaveClickHandler(callback) {
+    this._callback.saveClick = callback;
+    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
+  }
 
-    if (this._data.hasAvailableOffers) {
-      this.getElement()
-        .querySelector('.event__available-offers')
-        .addEventListener('change',this._offersChangeHandler);
+  _dateFromChangeHandler([userDate]) {
+    this.updateData({
+      dateFrom: userDate,
+      dateTo: userDate > this._data.dateTo ? userDate : this._data.dateTo,
+    });
+  }
+
+  _setStartPicker() {
+    if (this._startPicker) {
+      this._startPicker.destroy();
+      this._startPicker = null;
+    }
+    this._startPicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateFrom,
+        enableTime: true,
+        onClose: this._dateFromChangeHandler,
+      },
+    );
+  }
+
+  _dateToChangeHandler([userDate]) {
+    this.updateData({
+      dateFrom: userDate < this._data.dateFrom ? userDate : this._data.dateFrom,
+      dateTo: userDate,
+    });
+  }
+
+  _setEndPicker() {
+    if (this._endPicker) {
+      this._endPicker.destroy();
+      this._endPicker = null;
     }
 
-    this.getElement()
-      .querySelector('.event__input--price')
-      .addEventListener('input', this._priceInputHandler);
+    this._endPicker = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateTo,
+        minDate: this._data.dateFrom,
+        enableTime: true,
+        onClose: this._dateToChangeHandler,
+      },
+    );
+  }
 
-    const destinationInputElement = this.getElement().querySelector('#event-destination-1');
-
-    destinationInputElement.addEventListener('change', (evt) => {
-      const isValidValue = availableDestinations.some((name) => name === evt.target.value);
-      if (!isValidValue) {
-        destinationInputElement.setCustomValidity('Select from list');
-      } else {
-        destinationInputElement.setCustomValidity('');
-        this._destinationChangeHandler(evt);
-      }
-      destinationInputElement.reportValidity();
+  _destinationChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: mockDestinations.find((el) => el.name === evt.target.value),
     });
   }
 
@@ -295,11 +334,62 @@ export default class EditEvent extends SmartView {
     });
   }
 
-  _destinationChangeHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-      destination: mockDestinations.find((el) => el.name === evt.target.value),
+  _setInnerHandlers() {
+    this.getElement().querySelector('.event__type-list').addEventListener('change',this._typeChangeHandler);
+
+    if (this._data.hasAvailableOffers) {
+      this.getElement().querySelector('.event__available-offers').addEventListener('change',this._offersChangeHandler);
+    }
+
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._priceInputHandler);
+
+    const destinationInputElement = this.getElement().querySelector('#event-destination-1');
+
+    destinationInputElement.addEventListener('change', (evt) => {
+      const isValidValue = availableDestinations.some((name) => name === evt.target.value);
+      if (!isValidValue) {
+        destinationInputElement.setCustomValidity('Select from list');
+      } else {
+        destinationInputElement.setCustomValidity('');
+        this._destinationChangeHandler(evt);
+      }
+      destinationInputElement.reportValidity();
     });
+
+    this.getElement()
+      .querySelector('#event-end-time-1')
+      .addEventListener('focus', this._setEndPicker);
+
+    this.getElement()
+      .querySelector('#event-start-time-1')
+      .addEventListener('focus', this._setStartPicker);
+  }
+
+  removeElement() {
+    super.removeElement();
+    if (this._startPicker) {
+      this._startPicker.destroy();
+      this._startPicker = null;
+    }
+    if (this._endPicker) {
+      this._endPicker.destroy();
+      this._endPicker = null;
+    }
+  }
+
+  reset(event) {
+    this.updateData(
+      EditEvent.parseEventToData(event),
+    );
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setSaveClickHandler(this._callback.saveClick);
+    if (!this._data.isNewEvent) {
+      this.setEditClickHandler(this._callback.editClick);
+    }
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   static parseEventToData(event) {
@@ -318,25 +408,5 @@ export default class EditEvent extends SmartView {
     delete data.hasAvailableOffers;
     delete data.isNewEvent;
     return data;
-  }
-
-  _saveClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.saveClick(EditEvent.parseDataToEvent(this._data));
-  }
-
-  setSaveClickHandler(callback) {
-    this._callback.saveClick = callback;
-    this.getElement().querySelector('.event--edit').addEventListener('submit', this._saveClickHandler);
-  }
-
-  _deleteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.deleteClick(EditEvent.parseDataToEvent(this._data));
-  }
-
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 }
