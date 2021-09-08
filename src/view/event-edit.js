@@ -3,6 +3,9 @@ import { makeId } from '../utils/common.js';
 import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
 import SmartView from './smart.js';
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const availableDestinations = mockDestinations.map((element) => element.name);
 const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
