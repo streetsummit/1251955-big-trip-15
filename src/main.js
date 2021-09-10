@@ -1,8 +1,8 @@
 import { mockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition } from './utils/render.js';
-import MenuView from './view/menu.js';
+import MenuView from './view/menu-view.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-import EventBoardPresenter from './presenter/event-board.js';
+import EventBoardPresenter from './presenter/event-board-presenter.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
 

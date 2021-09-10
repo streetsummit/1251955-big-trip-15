@@ -1,7 +1,7 @@
 import { TYPES } from '../utils/constants.js';
 import { makeId } from '../utils/common.js';
 import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
-import SmartView from './smart.js';
+import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 

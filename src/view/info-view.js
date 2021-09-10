@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import AbstractView from './abstract-view.js';
 import { getTripPrice } from '../utils/event-utils.js';
 
 const createTripInfoTemplate = (events) => (
@@ -15,7 +15,7 @@ const createTripInfoTemplate = (events) => (
   </section>`
 );
 
-export default class TripInfo extends AbstractView {
+export default class Info extends AbstractView {
   constructor(events) {
     super();
     this._events = events;

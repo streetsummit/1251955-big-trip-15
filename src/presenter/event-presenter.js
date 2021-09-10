@@ -1,5 +1,5 @@
-import EventView from '../view/event.js';
-import EditEventView from '../view/event-edit.js';
+import EventView from '../view/event-view.js';
+import EditEventView from '../view/edit-event-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
 import { UserAction, UpdateType } from '../utils/constants.js';
