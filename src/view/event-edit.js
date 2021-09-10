@@ -251,11 +251,15 @@ export default class EditEvent extends SmartView {
     });
   }
 
-  _setStartPicker() {
-    if (this._startPicker) {
-      this._startPicker.destroy();
-      this._startPicker = null;
+  _destroyPicker(picker) {
+    if (picker) {
+      picker.destroy();
+      picker = null;
     }
+  }
+
+  _setStartPicker() {
+    this._destroyPicker(this._startPicker);
     this._startPicker = flatpickr(
       this.getElement().querySelector('#event-start-time-1'),
       {
@@ -275,10 +279,7 @@ export default class EditEvent extends SmartView {
   }
 
   _setEndPicker() {
-    if (this._endPicker) {
-      this._endPicker.destroy();
-      this._endPicker = null;
-    }
+    this._destroyPicker(this._endPicker);
 
     this._endPicker = flatpickr(
       this.getElement().querySelector('#event-end-time-1'),
@@ -367,17 +368,13 @@ export default class EditEvent extends SmartView {
 
   removeElement() {
     super.removeElement();
-    if (this._startPicker) {
-      this._startPicker.destroy();
-      this._startPicker = null;
-    }
-    if (this._endPicker) {
-      this._endPicker.destroy();
-      this._endPicker = null;
-    }
+    this._destroyPicker(this._startPicker);
+    this._destroyPicker(this._endPicker);
   }
 
   reset(event) {
+    this._destroyPicker(this._startPicker);
+    this._destroyPicker(this._endPicker);
     this.updateData(
       EditEvent.parseEventToData(event),
     );
