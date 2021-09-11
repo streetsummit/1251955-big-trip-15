@@ -193,6 +193,7 @@ export default class EditEvent extends SmartView {
     this._data = EditEvent.parseEventToData(event);
     this._startPicker = null;
     this._endPicker = null;
+    this._dateState = null;
 
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
@@ -204,8 +205,6 @@ export default class EditEvent extends SmartView {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
-    this._setStartPicker = this._setStartPicker.bind(this);
-    this._setEndPicker = this._setEndPicker.bind(this);
 
     this._setInnerHandlers();
   }
@@ -247,8 +246,54 @@ export default class EditEvent extends SmartView {
   _dateFromChangeHandler([userDate]) {
     this.updateData({
       dateFrom: userDate,
-      dateTo: userDate > this._data.dateTo ? userDate : this._data.dateTo,
-    });
+    }, true);
+    this._endPicker.set('minDate', userDate);
+    this._endPicker.set('minTime', userDate);
+
+    if (this._dateState <= userDate || !this._dateState) {
+      this._endPicker.setDate(userDate);
+      this._dateState = userDate;
+
+      this.updateData({
+        dateTo: userDate,
+      }, true);
+    }
+  }
+
+  setStartPicker() {
+    this._destroyPicker(this._startPicker);
+    this._startPicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        onClose: this._dateFromChangeHandler,
+      },
+    );
+  }
+
+  _dateToChangeHandler([userDate]) {
+    this._dateState = userDate;
+
+    this.updateData({
+      dateTo: userDate,
+    }, true);
+  }
+
+  setEndPicker() {
+    this._destroyPicker(this._endPicker);
+    this._endPicker = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateTo,
+        minDate: this._data.dateFrom,
+        'time_24hr': true,
+        enableTime: true,
+        onClose: this._dateToChangeHandler,
+      },
+    );
   }
 
   _destroyPicker(picker) {
@@ -256,41 +301,6 @@ export default class EditEvent extends SmartView {
       picker.destroy();
       picker = null;
     }
-  }
-
-  _setStartPicker() {
-    this._destroyPicker(this._startPicker);
-    this._startPicker = flatpickr(
-      this.getElement().querySelector('#event-start-time-1'),
-      {
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._data.dateFrom,
-        enableTime: true,
-        onClose: this._dateFromChangeHandler,
-      },
-    );
-  }
-
-  _dateToChangeHandler([userDate]) {
-    this.updateData({
-      dateFrom: userDate < this._data.dateFrom ? userDate : this._data.dateFrom,
-      dateTo: userDate,
-    });
-  }
-
-  _setEndPicker() {
-    this._destroyPicker(this._endPicker);
-
-    this._endPicker = flatpickr(
-      this.getElement().querySelector('#event-end-time-1'),
-      {
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._data.dateTo,
-        minDate: this._data.dateFrom,
-        enableTime: true,
-        onClose: this._dateToChangeHandler,
-      },
-    );
   }
 
   _destinationChangeHandler(evt) {
@@ -356,14 +366,6 @@ export default class EditEvent extends SmartView {
       }
       destinationInputElement.reportValidity();
     });
-
-    this.getElement()
-      .querySelector('#event-end-time-1')
-      .addEventListener('focus', this._setEndPicker);
-
-    this.getElement()
-      .querySelector('#event-start-time-1')
-      .addEventListener('focus', this._setStartPicker);
   }
 
   removeElement() {
@@ -373,15 +375,17 @@ export default class EditEvent extends SmartView {
   }
 
   reset(event) {
-    this._destroyPicker(this._startPicker);
-    this._destroyPicker(this._endPicker);
     this.updateData(
       EditEvent.parseEventToData(event),
     );
+    this._destroyPicker(this._startPicker);
+    this._destroyPicker(this._endPicker);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this.setStartPicker();
+    this.setEndPicker();
     this.setSaveClickHandler(this._callback.saveClick);
     if (!this._data.isNewEvent) {
       this.setEditClickHandler(this._callback.editClick);

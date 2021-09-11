@@ -62,6 +62,7 @@ export default class Event {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
+      this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
     }
   }
@@ -83,6 +84,8 @@ export default class Event {
   _replaceCardToForm() {
     replace(this._editEventComponent, this._eventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._editEventComponent.setStartPicker();
+    this._editEventComponent.setEndPicker();
     this._changeMode();
     this._mode = Mode.EDITING;
   }
