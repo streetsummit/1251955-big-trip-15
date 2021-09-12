@@ -185,5 +185,7 @@ export default class EventBoard {
       remove(this._infoComponent);
       this._infoComponent = null;
     }
+
+    remove(this._eventListComponent);
   }
 }
