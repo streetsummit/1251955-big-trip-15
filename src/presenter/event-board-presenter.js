@@ -1,9 +1,9 @@
-import InfoView from '../view/trip-info.js';
-import SortView from '../view/trip-sort.js';
-import EventListView from '../view/event-list.js';
-import NoEventView from '../view/no-event.js';
-import EventPresenter from './event.js';
-import EventNewPresenter from './event-new.js';
+import InfoView from '../view/info-view.js';
+import SortView from '../view/sort-view.js';
+import EventListView from '../view/event-list-view.js';
+import NoEventView from '../view/no-event-view.js';
+import EventPresenter from './event-presenter.js';
+import EventNewPresenter from './event-new-presenter.js';
 import { render, RenderPosition, remove } from '../utils/render.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/event-utils.js';
 import { filter } from '../utils/filter-utils.js';

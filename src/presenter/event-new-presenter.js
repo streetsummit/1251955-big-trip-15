@@ -1,4 +1,4 @@
-import EditEventView from '../view/event-edit.js';
+import EditEventView from '../view/edit-event-view.js';
 import { makeId, isEscEvent } from '../utils/common.js';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/constants.js';
@@ -23,6 +23,8 @@ export default class EventNew {
     this._editEventComponent = new EditEventView();
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
     this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._editEventComponent.setStartPicker();
+    this._editEventComponent.setEndPicker();
 
     render(this._eventListContainer, this._editEventComponent, RenderPosition.AFTERBEGIN);
 
@@ -44,8 +46,6 @@ export default class EventNew {
     this._changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
       Object.assign({id: makeId(6)}, event),
     );
     this.destroy();

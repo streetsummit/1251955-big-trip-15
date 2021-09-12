@@ -1,5 +1,5 @@
-import EventView from '../view/event.js';
-import EditEventView from '../view/event-edit.js';
+import EventView from '../view/event-view.js';
+import EditEventView from '../view/edit-event-view.js';
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isEscEvent } from '../utils/common.js';
 import { UserAction, UpdateType } from '../utils/constants.js';
@@ -62,6 +62,7 @@ export default class Event {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
+      this._editEventComponent.reset(this._event);
       this._replaceFormToCard();
     }
   }
@@ -83,6 +84,8 @@ export default class Event {
   _replaceCardToForm() {
     replace(this._editEventComponent, this._eventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._editEventComponent.setStartPicker();
+    this._editEventComponent.setEndPicker();
     this._changeMode();
     this._mode = Mode.EDITING;
   }
