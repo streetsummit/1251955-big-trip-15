@@ -5,6 +5,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import EventBoardPresenter from './presenter/event-board-presenter.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
+import { MenuItem } from './utils/constants.js';
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
@@ -17,14 +18,30 @@ const siteMenuContainer = siteHeaderContainer.querySelector('.trip-controls__nav
 const infoContainer = siteHeaderContainer.querySelector('.trip-main');
 const filtersContainer = siteHeaderContainer.querySelector('.trip-controls__filters');
 const eventsContainer = siteMainElement.querySelector('.trip-events');
+const menuComponent = new MenuView();
+
+render(siteMenuContainer, menuComponent, RenderPosition.BEFOREEND);
 
 const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel, filterModel);
-
-render(siteMenuContainer, new MenuView(), RenderPosition.BEFOREEND);
 const filterPresenter = new FilterPresenter(filtersContainer, filterModel, eventsModel);
 
 filterPresenter.init();
 eventBoardPresenter.init();
+
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      // Показать точки маршрута
+      // Скрыть статистику
+      break;
+    case MenuItem.STATS:
+      // Показать статистику
+      // Скрыть точки маршрута
+      break;
+  }
+};
+
+menuComponent.setMenuClickHandler(handleMenuClick);
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
