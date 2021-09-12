@@ -13,11 +13,11 @@ eventsModel.setEvents(mockEvents);
 const filterModel = new FilterModel();
 
 const siteHeaderContainer = document.querySelector('.page-header');
-const siteMainElement = document.querySelector('.page-main');
+const boardContainer = document.querySelector('.board-container');
 const siteMenuContainer = siteHeaderContainer.querySelector('.trip-controls__navigation');
 const infoContainer = siteHeaderContainer.querySelector('.trip-main');
 const filtersContainer = siteHeaderContainer.querySelector('.trip-controls__filters');
-const eventsContainer = siteMainElement.querySelector('.trip-events');
+const eventsContainer = document.querySelector('.trip-events');
 const menuComponent = new MenuView();
 
 render(siteMenuContainer, menuComponent, RenderPosition.BEFOREEND);
