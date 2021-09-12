@@ -31,12 +31,13 @@ eventBoardPresenter.init();
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      // Показать точки маршрута
+      eventBoardPresenter.destroy();
+      eventBoardPresenter.init();
       // Скрыть статистику
       break;
     case MenuItem.STATS:
       // Показать статистику
-      // Скрыть точки маршрута
+      eventBoardPresenter.destroy();
       break;
   }
 };
