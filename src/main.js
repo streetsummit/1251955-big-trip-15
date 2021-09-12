@@ -1,6 +1,7 @@
 import { mockEvents } from './mocks/mock-event.js';
 import { render, RenderPosition } from './utils/render.js';
 import MenuView from './view/menu-view.js';
+import StatisticsView from './view/statistics-view.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventBoardPresenter from './presenter/event-board-presenter.js';
 import EventsModel from './model/events-model.js';
@@ -38,6 +39,7 @@ const handleMenuClick = (menuItem) => {
     case MenuItem.STATS:
       // Показать статистику
       eventBoardPresenter.destroy();
+      render(boardContainer, new StatisticsView(), RenderPosition.BEFOREEND);
       break;
   }
 };
