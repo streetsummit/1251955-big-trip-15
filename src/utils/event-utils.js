@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-dayjs.extend(duration);
+const MIN_IN_DAY = 1440;
+const MIN_IN_HOUR = 60;
 
 export const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom) - dayjs(eventB.dateFrom);
 
@@ -12,14 +12,14 @@ export const getFullEventPrice = (event) => event.offers.reduce((sum, current) =
 
 export const getTripPrice = (events) => events.reduce(((sum, event) => sum + getFullEventPrice(event)), 0);
 
-export const formatDuration = (diff) => {
-  let days = dayjs.duration(diff).days();
+export const formatDuration = (duration) => {
+
+  let days = Math.floor(duration / MIN_IN_DAY);
+  let hours = Math.floor((duration - (days * MIN_IN_DAY)) / MIN_IN_HOUR);
+  let minutes = duration - (days * MIN_IN_DAY) - (hours * MIN_IN_HOUR);
+
   days = days < 10 ? `0${days}` : days;
-
-  let hours = dayjs.duration(diff).hours();
   hours = hours < 10 ? `0${hours}` : hours;
-
-  let minutes = dayjs.duration(diff).minutes();
   minutes = minutes < 10 ? `0${minutes}` : minutes;
 
   if (days > 0) {

@@ -5,7 +5,7 @@ dayjs.extend(duration);
 import { formatDuration } from '../utils/event-utils.js';
 
 const createEventDurationTemplate = (start, end) => {
-  const eventDuration = dayjs(end) - dayjs(start);
+  const eventDuration = dayjs(end).diff(dayjs(start), 'm');
 
   return formatDuration(eventDuration);
 };
