@@ -39,7 +39,7 @@ const handleMenuClick = (menuItem) => {
     case MenuItem.STATS:
       // Показать статистику
       eventBoardPresenter.destroy();
-      render(boardContainer, new StatisticsView(), RenderPosition.BEFOREEND);
+      render(boardContainer, new StatisticsView(eventsModel.getEvents()), RenderPosition.BEFOREEND);
       break;
   }
 };

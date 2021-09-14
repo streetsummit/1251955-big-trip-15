@@ -31,3 +31,17 @@ export const formatDuration = (duration) => {
   }
   return `${minutes}M`;
 };
+
+export const getCountByType = (events, type) => events.filter((event) => event.type === type).length;
+
+export const getSumByType = (events, type) => {
+  const filteredEvents = events.filter((event) => event.type === type);
+  const totalSum = filteredEvents.reduce((acc, event) => acc + event.price, 0);
+  return totalSum;
+};
+
+export const getDurationByType = (events, type) => {
+  const filteredEvents = events.filter((event) => event.type === type);
+  const totalDuration = filteredEvents.reduce((acc, event) => acc + (getDuration(event.dateTo, event.dateFrom)), 0);
+  return totalDuration;
+};
