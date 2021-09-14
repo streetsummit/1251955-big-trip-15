@@ -2,11 +2,13 @@ import dayjs from 'dayjs';
 const MIN_IN_DAY = 1440;
 const MIN_IN_HOUR = 60;
 
+export const getDuration = (end, start) => dayjs(end).diff(dayjs(start), 'm');
+
 export const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom) - dayjs(eventB.dateFrom);
 
 export const sortByPrice = (eventA, eventB) => eventB.price - eventA.price;
 
-export const sortByDuration = (eventA, eventB) => (dayjs(eventB.dateTo) - dayjs(eventB.dateFrom)) - (dayjs(eventA.dateTo) - dayjs(eventA.dateFrom));
+export const sortByDuration = (eventA, eventB) => getDuration(eventB.dateTo, eventB.dateFrom) - getDuration(eventA.dateTo, eventA.dateFrom);
 
 export const getFullEventPrice = (event) => event.offers.reduce((sum, current) => sum + current.price, event.price);
 

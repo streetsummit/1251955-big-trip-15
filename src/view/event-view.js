@@ -2,11 +2,10 @@ import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
-import { formatDuration } from '../utils/event-utils.js';
+import { getDuration, formatDuration } from '../utils/event-utils.js';
 
 const createEventDurationTemplate = (start, end) => {
-  const eventDuration = dayjs(end).diff(dayjs(start), 'm');
-
+  const eventDuration = getDuration(end, start);
   return formatDuration(eventDuration);
 };
 
