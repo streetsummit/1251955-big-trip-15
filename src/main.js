@@ -1,5 +1,5 @@
 import { mockEvents } from './mocks/mock-event.js';
-import { render, RenderPosition } from './utils/render.js';
+import { render, RenderPosition, remove } from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilterPresenter from './presenter/filter-presenter.js';
@@ -26,25 +26,26 @@ render(siteMenuContainer, menuComponent, RenderPosition.BEFOREEND);
 const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel, filterModel);
 const filterPresenter = new FilterPresenter(filtersContainer, filterModel, eventsModel);
 
-filterPresenter.init();
-eventBoardPresenter.init();
-
+let statisticsComponent = null;
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
+      remove(statisticsComponent);
       eventBoardPresenter.destroy();
       eventBoardPresenter.init();
-      // Скрыть статистику
       break;
     case MenuItem.STATS:
-      // Показать статистику
+      statisticsComponent = new StatisticsView(eventsModel.getEvents());
       eventBoardPresenter.destroy();
-      render(boardContainer, new StatisticsView(eventsModel.getEvents()), RenderPosition.BEFOREEND);
+      render(boardContainer, statisticsComponent, RenderPosition.BEFOREEND);
       break;
   }
 };
 
 menuComponent.setMenuClickHandler(handleMenuClick);
+
+filterPresenter.init();
+eventBoardPresenter.init();
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
