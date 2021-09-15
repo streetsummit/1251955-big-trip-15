@@ -47,10 +47,10 @@ export default class EventBoard {
     this._filterModel.removeObserver(this._handleModelEvent);
   }
 
-  createEvent() {
+  createEvent(callback) {
     this._currentSortType = SortType.DAY;
     this._filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-    this._eventNewPresenter.init();
+    this._eventNewPresenter.init(callback);
   }
 
   _getEvents() {

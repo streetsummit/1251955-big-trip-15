@@ -19,6 +19,8 @@ const siteMenuContainer = siteHeaderContainer.querySelector('.trip-controls__nav
 const infoContainer = siteHeaderContainer.querySelector('.trip-main');
 const filtersContainer = siteHeaderContainer.querySelector('.trip-controls__filters');
 const eventsContainer = document.querySelector('.trip-events');
+const newEventButton = document.querySelector('.trip-main__event-add-btn');
+
 const menuComponent = new MenuView();
 
 render(siteMenuContainer, menuComponent, RenderPosition.BEFOREEND);
@@ -47,7 +49,17 @@ menuComponent.setMenuClickHandler(handleMenuClick);
 filterPresenter.init();
 eventBoardPresenter.init();
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+const handleEditFormClose = () => {
+  newEventButton.disabled = false;
+};
+
+newEventButton.addEventListener('click', (evt) => {
   evt.preventDefault();
-  eventBoardPresenter.createEvent();
+  if (statisticsComponent) {
+    remove(statisticsComponent);
+    eventBoardPresenter.init();
+  }
+
+  evt.target.disabled = true;
+  eventBoardPresenter.createEvent(handleEditFormClose);
 });
