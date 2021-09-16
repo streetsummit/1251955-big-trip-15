@@ -6,7 +6,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import EventBoardPresenter from './presenter/event-board-presenter.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
-import { MenuItem } from './utils/constants.js';
+import { MenuItem, UpdateType, FilterType } from './utils/constants.js';
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
@@ -34,6 +34,7 @@ const handleMenuClick = (menuItem) => {
     case MenuItem.TABLE:
       remove(statisticsComponent);
       eventBoardPresenter.destroy();
+      filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
       eventBoardPresenter.init();
       break;
     case MenuItem.STATS:
