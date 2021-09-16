@@ -2,23 +2,11 @@ import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
+import { getDuration, formatDuration } from '../utils/event-utils.js';
 
 const createEventDurationTemplate = (start, end) => {
-  const eventDuration = dayjs(end) - dayjs(start);
-
-  let days = dayjs.duration(eventDuration).days();
-  days = days < 10 ? `0${days}` : days;
-  let hours = dayjs.duration(eventDuration).hours();
-  hours = hours < 10 ? `0${hours}` : hours;
-  let minutes = dayjs.duration(eventDuration).minutes();
-  minutes = minutes < 10 ? `0${minutes}` : minutes;
-
-  if (days > 0) {
-    return `${days}D ${hours}H ${minutes}M`;
-  } else if (hours > 0) {
-    return `${hours}H ${minutes}M`;
-  }
-  return `${minutes}M`;
+  const eventDuration = getDuration(end, start);
+  return formatDuration(eventDuration);
 };
 
 const createEventOfferListTemplate = (offers) => (`

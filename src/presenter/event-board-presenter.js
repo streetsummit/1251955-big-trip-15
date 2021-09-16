@@ -29,20 +29,28 @@ export default class EventBoard {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
 
     this._eventNewPresenter = new EventNewPresenter(this._eventListComponent, this._handleViewAction);
   }
 
   init() {
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderEventBoard();
   }
 
-  createEvent() {
+  destroy() {
+    this._clearEventBoard({resetSortType: true});
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createEvent(callback) {
     this._currentSortType = SortType.DAY;
     this._filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-    this._eventNewPresenter.init();
+    this._eventNewPresenter.init(callback);
   }
 
   _getEvents() {
@@ -177,5 +185,7 @@ export default class EventBoard {
       remove(this._infoComponent);
       this._infoComponent = null;
     }
+
+    remove(this._eventListComponent);
   }
 }
