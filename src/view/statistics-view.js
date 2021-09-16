@@ -11,7 +11,7 @@ const getUniqueTypes = (events) => {
 };
 
 const renderMoneyChart = (moneyCtx, labels, data) => {
-  moneyCtx.height = BAR_HEIGHT * (labels.length - 1);
+  moneyCtx.height = BAR_HEIGHT * data.length;
 
   const moneyChart = new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
@@ -23,6 +23,8 @@ const renderMoneyChart = (moneyCtx, labels, data) => {
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
       }],
     },
     options: {
@@ -55,7 +57,6 @@ const renderMoneyChart = (moneyCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -66,7 +67,6 @@ const renderMoneyChart = (moneyCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
         }],
       },
       legend: {
@@ -82,7 +82,7 @@ const renderMoneyChart = (moneyCtx, labels, data) => {
 };
 
 const renderTypeChart = (typeCtx, labels, data) => {
-  typeCtx.height = BAR_HEIGHT * (labels.length - 1);
+  typeCtx.height = BAR_HEIGHT * data.length;
 
   const typeChart = new Chart(typeCtx, {
     plugins: [ChartDataLabels],
@@ -94,6 +94,8 @@ const renderTypeChart = (typeCtx, labels, data) => {
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
       }],
     },
     options: {
@@ -126,7 +128,6 @@ const renderTypeChart = (typeCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -137,7 +138,6 @@ const renderTypeChart = (typeCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
         }],
       },
       legend: {
@@ -153,7 +153,7 @@ const renderTypeChart = (typeCtx, labels, data) => {
 };
 
 const renderTimeChart = (timeCtx, labels, data) => {
-  timeCtx.height = BAR_HEIGHT * (labels.length - 1);
+  timeCtx.height = BAR_HEIGHT * data.length;
 
   const timeChart = new Chart(timeCtx, {
     plugins: [ChartDataLabels],
@@ -165,6 +165,8 @@ const renderTimeChart = (timeCtx, labels, data) => {
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
       }],
     },
     options: {
@@ -197,7 +199,6 @@ const renderTimeChart = (timeCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
         }],
         xAxes: [{
           ticks: {
@@ -208,7 +209,6 @@ const renderTimeChart = (timeCtx, labels, data) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
         }],
       },
       legend: {
