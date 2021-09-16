@@ -26,8 +26,6 @@ export default class EventNew {
     this._editEventComponent = new EditEventView();
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
     this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
-    this._editEventComponent.setStartPicker();
-    this._editEventComponent.setEndPicker();
 
     render(this._eventListContainer, this._editEventComponent, RenderPosition.AFTERBEGIN);
 

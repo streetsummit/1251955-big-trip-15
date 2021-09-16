@@ -31,17 +31,15 @@ export default class Event {
   init(event) {
     this._event = event;
 
+    this._eventComponent = new EventView(event);
+    this._editEventComponent = null;
+
     const prevEventComponent = this._eventComponent;
     const prevEditEventComponent = this._editEventComponent;
 
-    this._eventComponent = new EventView(event);
-    this._editEventComponent = new EditEventView(event);
-
     this._eventComponent.setEditClickHandler(this._handleShowFormButtonClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
-    this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
-    this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
+
 
     if (prevEventComponent === null || prevEditEventComponent === null) {
       render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
@@ -82,10 +80,13 @@ export default class Event {
   }
 
   _replaceCardToForm() {
+    this._editEventComponent = new EditEventView(this._event);
+    this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
+    this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
+    this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
+
     replace(this._editEventComponent, this._eventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
-    this._editEventComponent.setStartPicker();
-    this._editEventComponent.setEndPicker();
     this._changeMode();
     this._mode = Mode.EDITING;
   }

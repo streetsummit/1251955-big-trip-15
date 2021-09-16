@@ -207,6 +207,9 @@ export default class EditEvent extends SmartView {
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
 
     this._setInnerHandlers();
+
+    this._setStartPicker();
+    this._setEndPicker();
   }
 
   getTemplate() {
@@ -260,7 +263,7 @@ export default class EditEvent extends SmartView {
     }
   }
 
-  setStartPicker() {
+  _setStartPicker() {
     this._destroyPicker(this._startPicker);
     this._startPicker = flatpickr(
       this.getElement().querySelector('#event-start-time-1'),
@@ -281,7 +284,7 @@ export default class EditEvent extends SmartView {
     }, true);
   }
 
-  setEndPicker() {
+  _setEndPicker() {
     this._destroyPicker(this._endPicker);
     this._endPicker = flatpickr(
       this.getElement().querySelector('#event-end-time-1'),
@@ -384,8 +387,8 @@ export default class EditEvent extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.setStartPicker();
-    this.setEndPicker();
+    this._setStartPicker();
+    this._setEndPicker();
     this.setSaveClickHandler(this._callback.saveClick);
     if (!this._data.isNewEvent) {
       this.setEditClickHandler(this._callback.editClick);
