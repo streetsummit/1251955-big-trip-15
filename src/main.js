@@ -58,6 +58,7 @@ newEventButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   if (statisticsComponent) {
     remove(statisticsComponent);
+    menuComponent.setMenuItem(MenuItem.TABLE);
     eventBoardPresenter.init();
   }
 
