@@ -1,4 +1,4 @@
-import { TYPES } from '../utils/constants.js';
+import { TYPES } from '../utils/constants.js'; // Брать из офферов с сервера
 import { makeId } from '../utils/common.js';
 import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
 import SmartView from './smart-view.js';
@@ -7,7 +7,6 @@ import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const availableDestinations = mockDestinations.map((element) => element.name);
 const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
 
 const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
@@ -27,17 +26,9 @@ const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   </div>
 `)).join('\n');
 
-const createDestinationSelectTemplate = (name) => (
-  `<input
-    class="event__input  event__input--destination"
-    id="event-destination-1" type="text"
-    name="event-destination"
-    value="${name}"
-    list="destination-list-1"
-    required
-  >
-  <datalist id="destination-list-1">
-    ${mockDestinations.map((element) => `<option value="${element.name}"></option>`).join('\n')}
+const createDestinationsListTemplate = (destinationsData) => (
+  `<datalist id="destination-list-1">
+    ${destinationsData.map((element) => `<option value="${element.name}"></option>`).join('\n')}
   </datalist>`
 );
 
@@ -126,7 +117,7 @@ const createEventEditTemplate = (data) => {
   const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers, isNewEvent } = data;
 
   const typesTemplate = createEventEditTypesTemplate(type);
-  const destinationSelectTemplate = createDestinationSelectTemplate(destination.name);
+  const destinationsListTemplate = createDestinationsListTemplate(mockDestinations);
   const availableOffers = getAvailableOffers(type);
   const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
   const destinationTemplate = createDestinationTemplate(destination);
@@ -154,7 +145,15 @@ const createEventEditTemplate = (data) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          ${destinationSelectTemplate}
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-1" type="text"
+            name="event-destination"
+            value="${destination.name}"
+            list="destination-list-1"
+            required
+          >
+          ${destinationsListTemplate}
         </div>
 
         <div class="event__field-group  event__field-group--time">
@@ -360,7 +359,7 @@ export default class EditEvent extends SmartView {
     const destinationInputElement = this.getElement().querySelector('#event-destination-1');
 
     destinationInputElement.addEventListener('change', (evt) => {
-      const isValidValue = availableDestinations.some((name) => name === evt.target.value);
+      const isValidValue = mockDestinations.some((item) => item.name === evt.target.value);
       if (!isValidValue) {
         destinationInputElement.setCustomValidity('Select from list');
       } else {
