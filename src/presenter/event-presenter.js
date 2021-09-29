@@ -31,17 +31,14 @@ export default class Event {
   init(event) {
     this._event = event;
 
-    this._eventComponent = new EventView(event);
-    this._editEventComponent = null;
-
     const prevEventComponent = this._eventComponent;
-    const prevEditEventComponent = this._editEventComponent;
+    this._eventComponent = new EventView(event);
 
     this._eventComponent.setEditClickHandler(this._handleShowFormButtonClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
 
-    if (prevEventComponent === null || prevEditEventComponent === null) {
+    if (prevEventComponent === null) {
       render(this._eventListContainer, this._eventComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -50,12 +47,7 @@ export default class Event {
       replace(this._eventComponent, prevEventComponent);
     }
 
-    if (this._mode === Mode.EDITING) {
-      replace(this._editEventComponent, prevEditEventComponent);
-    }
-
     remove(prevEventComponent);
-    remove(prevEditEventComponent);
   }
 
   resetView() {
@@ -95,6 +87,7 @@ export default class Event {
     replace(this._eventComponent, this._editEventComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
+    remove(this._editEventComponent);
   }
 
   _handleShowFormButtonClick() {
