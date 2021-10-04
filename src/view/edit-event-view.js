@@ -1,15 +1,12 @@
-import { TYPES } from '../utils/constants.js'; // Брать из офферов с сервера
 import { makeId } from '../utils/common.js';
-import { mockDestinations, mockOffers } from '../mocks/mocks.js';
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
-
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const getAvailableOffers = (eventType) => (mockOffers.find((el) => el.type === eventType)).offers;
+const getAvailableOffers = (eventType, allOffers) => (allOffers.find((el) => el.type === eventType)).offers;
 
-const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
+const createEventEditTypesTemplate = (types, currentType) => types.map((type) => (`
   <div class="event__type-item">
     <input
       id="event-type-${type}-1"
@@ -26,9 +23,9 @@ const createEventEditTypesTemplate = (currentType) => TYPES.map((type) => (`
   </div>
 `)).join('\n');
 
-const createDestinationsListTemplate = (destinationsData) => (
+const createDestinationsListTemplate = (destinations) => (
   `<datalist id="destination-list-1">
-    ${destinationsData.map((element) => `<option value="${element.name}"></option>`).join('\n')}
+    ${destinations.map((element) => `<option value="${element.name}"></option>`).join('\n')}
   </datalist>`
 );
 
@@ -59,8 +56,8 @@ const createOffersListTemplate = (availableOffers, currentOffers) => {
   return template;
 };
 
-const createOffersTemplate = (availableOffers, currentOffers, hasAvailableOffers) => {
-  if (hasAvailableOffers) {
+const createOffersTemplate = (availableOffers, currentOffers) => {
+  if (availableOffers.length) {
     return `<section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
@@ -113,13 +110,15 @@ const BLANK_EVENT = {
   offers: [],
 };
 
-const createEventEditTemplate = (data) => {
-  const { dateFrom, dateTo, type, destination, price, offers, hasAvailableOffers, isNewEvent } = data;
+const createEventEditTemplate = (offersData, destinationsData, data) => {
+  const { dateFrom, dateTo, type, destination, price, offers, isNewEvent } = data;
 
-  const typesTemplate = createEventEditTypesTemplate(type);
-  const destinationsListTemplate = createDestinationsListTemplate(mockDestinations);
-  const availableOffers = getAvailableOffers(type);
-  const offersTemplate = createOffersTemplate(availableOffers, offers, hasAvailableOffers);
+  const types = offersData.map((offer) => offer.type);
+
+  const typesTemplate = createEventEditTypesTemplate(types, type);
+  const destinationsListTemplate = createDestinationsListTemplate(destinationsData);
+  const availableOffers = getAvailableOffers(type, offersData);
+  const offersTemplate = createOffersTemplate(availableOffers, offers);
   const destinationTemplate = createDestinationTemplate(destination);
   const closeButtonTemplate = createCloseButtonTemplate();
 
@@ -189,7 +188,10 @@ const createEventEditTemplate = (data) => {
 export default class EditEvent extends SmartView {
   constructor(offersData, destinationsData, event = BLANK_EVENT) {
     super();
+    this._offersData = offersData;
+    this._destinationsData = destinationsData;
     this._data = EditEvent.parseEventToData(event);
+    this._availableOffers = getAvailableOffers(this._data.type, offersData);
     this._startPicker = null;
     this._endPicker = null;
     this._dateState = null;
@@ -212,7 +214,7 @@ export default class EditEvent extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._offersData, this._destinationsData, this._data);
   }
 
   _deleteClickHandler(evt) {
@@ -308,7 +310,7 @@ export default class EditEvent extends SmartView {
   _destinationChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      destination: mockDestinations.find((el) => el.name === evt.target.value),
+      destination: this._destinationsData.find((el) => el.name === evt.target.value),
     });
   }
 
@@ -318,7 +320,7 @@ export default class EditEvent extends SmartView {
       .querySelectorAll('input[type=checkbox]:checked');
 
     const checkedOffers = [];
-    const availableOffers = getAvailableOffers(this._data.type);
+    const availableOffers = getAvailableOffers(this._data.type, this._offersData);
     checkedOffersElements.forEach((element) => {
       const offerTitle = element.dataset.title;
       const checkedOffer = availableOffers.find((el) => el.title === offerTitle);
@@ -342,15 +344,14 @@ export default class EditEvent extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
-      hasAvailableOffers: Boolean(getAvailableOffers(evt.target.value).length),
       offers: [],
     });
   }
 
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-list').addEventListener('change',this._typeChangeHandler);
+    if (this._availableOffers.length) {
 
-    if (this._data.hasAvailableOffers) {
       this.getElement().querySelector('.event__available-offers').addEventListener('change',this._offersChangeHandler);
     }
 
@@ -359,7 +360,7 @@ export default class EditEvent extends SmartView {
     const destinationInputElement = this.getElement().querySelector('#event-destination-1');
 
     destinationInputElement.addEventListener('change', (evt) => {
-      const isValidValue = mockDestinations.some((item) => item.name === evt.target.value);
+      const isValidValue = this._destinationsData.some((item) => item.name === evt.target.value);
       if (!isValidValue) {
         destinationInputElement.setCustomValidity('Select from list');
       } else {
@@ -400,7 +401,6 @@ export default class EditEvent extends SmartView {
       {},
       event,
       {
-        hasAvailableOffers: Boolean(getAvailableOffers(event.type).length),
         isNewEvent: event === BLANK_EVENT,
       },
     );
@@ -408,7 +408,6 @@ export default class EditEvent extends SmartView {
 
   static parseDataToEvent(data) {
     data = Object.assign({}, data);
-    delete data.hasAvailableOffers;
     delete data.isNewEvent;
     return data;
   }
