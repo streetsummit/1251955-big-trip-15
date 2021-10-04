@@ -10,11 +10,13 @@ import { filter } from '../utils/filter-utils.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../utils/constants.js';
 
 export default class EventBoard {
-  constructor(boardContainer, infoContainer, eventsModel, filterModel) {
+  constructor(boardContainer, infoContainer, eventsModel, filterModel, offersModel, destinationsModel) {
     this._boardContainer = boardContainer;
     this._infoContainer = infoContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._offersData = offersModel.getOffers();
+    this._destinationsData = destinationsModel.getDestinations();
     this._eventPresenter = new Map();
     this._filterType = FilterType.EVERYTHING;
     this._currentSortType = SortType.DAY;
@@ -30,7 +32,12 @@ export default class EventBoard {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    this._eventNewPresenter = new EventNewPresenter(this._eventListComponent, this._handleViewAction);
+    this._eventNewPresenter = new EventNewPresenter(
+      this._eventListComponent,
+      this._handleViewAction,
+      this._offersData,
+      this._destinationsData,
+    );
   }
 
   init() {
@@ -139,7 +146,13 @@ export default class EventBoard {
   }
 
   _renderEvent(event) {
-    const eventPresenter = new EventPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange);
+    const eventPresenter = new EventPresenter(
+      this._eventListComponent,
+      this._handleViewAction,
+      this._handleModeChange,
+      this._offersData,
+      this._destinationsData,
+    );
     eventPresenter.init(event);
     this._eventPresenter.set(event.id, eventPresenter);
   }

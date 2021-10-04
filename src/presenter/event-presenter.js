@@ -11,10 +11,12 @@ const Mode = {
 
 
 export default class Event {
-  constructor(eventListContainer, changeData, changeMode) {
+  constructor(eventListContainer, changeData, changeMode, offersData, destinationsData) {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._offersData = offersData;
+    this._destinationsData = destinationsData;
 
     this._eventComponent = null;
     this._editEventComponent = null;
@@ -72,7 +74,7 @@ export default class Event {
   }
 
   _replaceCardToForm() {
-    this._editEventComponent = new EditEventView(this._event);
+    this._editEventComponent = new EditEventView(this._offersData, this._destinationsData, this._event);
     this._editEventComponent.setEditClickHandler(this._handleHideFormButtonClick);
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
     this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);

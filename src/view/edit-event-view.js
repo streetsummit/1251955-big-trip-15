@@ -1,6 +1,6 @@
 import { TYPES } from '../utils/constants.js'; // Брать из офферов с сервера
 import { makeId } from '../utils/common.js';
-import { mockDestinations, mockOffers } from '../mocks/mock-event.js';
+import { mockDestinations, mockOffers } from '../mocks/mocks.js';
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
@@ -187,7 +187,7 @@ const createEventEditTemplate = (data) => {
 };
 
 export default class EditEvent extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(offersData, destinationsData, event = BLANK_EVENT) {
     super();
     this._data = EditEvent.parseEventToData(event);
     this._startPicker = null;
