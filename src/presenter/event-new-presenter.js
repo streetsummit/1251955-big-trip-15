@@ -4,9 +4,11 @@ import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/constants.js';
 
 export default class EventNew {
-  constructor(eventListContainer, changeData) {
+  constructor(eventListContainer, changeData, offersData, destinationsData) {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
+    this._offersData = offersData;
+    this._destinationsData = destinationsData;
 
     this._editEventComponent = null;
     this._destroyCallback = null;
@@ -23,7 +25,7 @@ export default class EventNew {
       return;
     }
 
-    this._editEventComponent = new EditEventView();
+    this._editEventComponent = new EditEventView(this._offersData, this._destinationsData);
     this._editEventComponent.setSaveClickHandler(this._handleSaveClick);
     this._editEventComponent.setDeleteClickHandler(this._handleDeleteClick);
 
