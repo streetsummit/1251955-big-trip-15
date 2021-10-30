@@ -8,9 +8,15 @@ import EventsModel from './model/events.js';
 import FilterModel from './model/filter.js';
 import OffersModel from './model/offers.js';
 import DestinationsModel from './model/destinations.js';
-
-
+import Api from './api.js';
 import { MenuItem, UpdateType, FilterType } from './utils/constants.js';
+
+const AUTHORIZATION = 'Basic streetsummit2021';
+const END_POINT = 'https://15.ecmascript.pages.academy/big-trip/';
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getEvents().then((events) => console.log(events));
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
