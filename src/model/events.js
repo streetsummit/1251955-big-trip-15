@@ -53,4 +53,44 @@ export default class Events extends AbstractObserver {
 
     this._notify(updateType, update);
   }
+
+  static adaptToClient(event) {
+    const adaptedEvent = Object.assign(
+      {},
+      event,
+      {
+        price: event['base_price'],
+        dateFrom: event['date_from'],
+        dateTo: event['date_to'],
+        isFavorite: event['is_favorite'],
+      },
+    );
+
+    delete adaptedEvent['base_price'];
+    delete adaptedEvent['date_from'];
+    delete adaptedEvent['date_to'];
+    delete adaptedEvent['is_favorite'];
+
+    return adaptedEvent;
+  }
+
+  static adaptToServer(event) {
+    const adaptedEvent = Object.assign(
+      {},
+      event,
+      {
+        'base_price': event.price,
+        'date_from': event.dateFrom,
+        'date_to': event.dateTo,
+        'is_favorite': event.isFavorite,
+      },
+    );
+
+    delete adaptedEvent.price;
+    delete adaptedEvent.dateFrom;
+    delete adaptedEvent.dateTo;
+    delete adaptedEvent.isFavorite;
+
+    return adaptedEvent;
+  }
 }
