@@ -1,15 +1,31 @@
-import { mockEvents } from './mocks/mock-event.js';
+import { mockEvents, mockDestinations, mockOffers } from './mocks/mocks.js';
 import { render, RenderPosition, remove } from './utils/render.js';
 import MenuView from './view/menu-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventBoardPresenter from './presenter/event-board-presenter.js';
-import EventsModel from './model/events-model.js';
-import FilterModel from './model/filter-model.js';
+import EventsModel from './model/events.js';
+import FilterModel from './model/filter.js';
+import OffersModel from './model/offers.js';
+import DestinationsModel from './model/destinations.js';
+import Api from './api.js';
 import { MenuItem, UpdateType, FilterType } from './utils/constants.js';
+
+const AUTHORIZATION = 'Basic streetsummit2021';
+const END_POINT = 'https://15.ecmascript.pages.academy/big-trip/';
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getEvents().then((events) => console.log(events));
 
 const eventsModel = new EventsModel();
 eventsModel.setEvents(mockEvents);
+
+const offersModel = new OffersModel();
+offersModel.setOffers(mockOffers);
+
+const destinationsModel = new DestinationsModel();
+destinationsModel.setDestinations(mockDestinations);
 
 const filterModel = new FilterModel();
 
@@ -25,7 +41,7 @@ const menuComponent = new MenuView();
 
 render(siteMenuContainer, menuComponent, RenderPosition.BEFOREEND);
 
-const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel, filterModel);
+const eventBoardPresenter = new EventBoardPresenter(eventsContainer, infoContainer, eventsModel, filterModel, offersModel, destinationsModel);
 const filterPresenter = new FilterPresenter(filtersContainer, filterModel, eventsModel);
 
 let statisticsComponent = null;
@@ -58,6 +74,7 @@ newEventButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   if (statisticsComponent) {
     remove(statisticsComponent);
+    menuComponent.setMenuItem(MenuItem.TABLE);
     eventBoardPresenter.init();
   }
 
